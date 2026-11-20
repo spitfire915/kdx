@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: spitfire915/OpenKDX
-          ref: phase3b/convergence
+          ref: main
           path: openkdx
       - name: Differential tests against Server 1.620 and Tracker 1.110
         run: |
