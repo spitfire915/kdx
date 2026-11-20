@@ -112,7 +112,7 @@ pub struct MockServer {
     pub addr: SocketAddr,
     /// What clients have sent so far.
     pub captured: Arc<Mutex<Captured>>,
-    handle: JoinHandle<()>,
+    handle: Mutex<Option<JoinHandle<()>>>,
 }
 
 impl MockServer {
@@ -165,20 +165,21 @@ impl MockServer {
         Self {
             addr,
             captured,
-            handle,
+            handle: Mutex::new(Some(handle)),
         }
     }
 
     /// Waits for every script to finish, then [`Self::check`]s; panics after 5
-    /// seconds.
-    pub async fn finish(self) {
-        tokio::time::timeout(Duration::from_secs(5), self.handle)
-            .await
-            .expect("mock server finished")
-            .expect("mock server task");
-        let captured = self.captured.lock().expect("captured");
-        let failures = &captured.failures;
-        assert!(failures.is_empty(), "mock script violated: {failures:?}");
+    /// seconds. The captured messages stay readable afterwards.
+    pub async fn finish(&self) {
+        let handle = self.handle.lock().expect("handle").take();
+        if let Some(handle) = handle {
+            tokio::time::timeout(Duration::from_secs(5), handle)
+                .await
+                .expect("mock server finished")
+                .expect("mock server task");
+        }
+        self.check();
     }
 
     /// Panics if the client violated a script.
