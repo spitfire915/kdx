@@ -272,7 +272,7 @@ fn trailing_bytes_after_the_last_section_survive() {
 }
 
 #[test]
-fn byte_0x54_and_tracker_lengths_load() {
+fn main_byte_0x54_loads_and_round_trips() {
     // main 0x54 sits between the description and address length bytes; the
     // server neither reads nor writes it.
     let mut b = fixture("00-fresh.stg");
