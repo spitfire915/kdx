@@ -264,7 +264,7 @@ Struct `DownloadFile` (dynamic):<a id="sDownloadFile"></a>
 
 | Off | Size | Type | Field | Notes |
 |---|---|---|---|---|
-| 0x00 | 8 | `u64` | `data_offset` | From a partial upload: the size of the partial on disk, which the server resumes from. The partial is kept as `<name>.prt` in the folder, where [401 File List](#m401) shows it. A client that stopped after sending 150000 bytes, as its note's steps say, left a `.prt` of 131072 bytes, and the next 416 gave 0x20000. <!-- [O `captures/cli-upload-resume.pcapng` frames 61, 88] --> The offset is not the 150000 bytes sent, nor those rounded down to a multiple of 0x1000, which would be 0x24000. The server probably writes the partial in large chunks. <!-- [I] --> |
+| 0x00 | 8 | `u64` | `data_offset` | Where to resume. |
 | 0x08 | 8 | `u64` | `rsrc_offset` |  |
 | 0x10 | 7 | `u8[7]` | `ignored` |  |
 | 0x17 | 1 | `u8` | `options` | Bit 0: plain (unencrypted) transfer. |
@@ -406,7 +406,7 @@ Struct `UploadReply` (24 bytes):<a id="sUploadReply"></a>
 
 | Off | Size | Type | Field | Notes |
 |---|---|---|---|---|
-| 0x00 | 8 | `u64` | `data_offset` | From a partial upload. The server resumes at this value, rounded down to a multiple of 0x1000. The partial is kept as `<name>.prt` in the folder, where [401 File List](#m401) shows it, and is written in large chunks: an upload cut after 150000 bytes left 131072 on disk and this field at 0x20000; one cut after 20000 bytes left an empty `.prt` and 0. <!-- [O `captures/cli-upload-resume.pcapng` frames 61, 88] --> |
+| 0x00 | 8 | `u64` | `data_offset` | From a partial upload: the size of the partial on disk, which the server resumes from. The partial is kept as `<name>.prt` in the folder, where [401 File List](#m401) shows it. A client that stopped after sending 150000 bytes, as its note's steps say, left a `.prt` of 131072 bytes, and the next 416 gave 0x20000. <!-- [O `captures/cli-upload-resume.pcapng` frames 61, 88] --> The offset is not the 150000 bytes sent, nor those rounded down to a multiple of 0x1000, which would be 0x24000. The server probably writes the partial in large chunks. <!-- [I] --> |
 | 0x08 | 8 | `u64` | `rsrc_offset` | Always all ones. Resource forks do not resume. |
 | 0x10 | 8 | `u8[8]` | `ignored` | 0 as sent. |
 
