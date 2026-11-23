@@ -17,7 +17,7 @@ size exceeds" (main section 0x1c); not reached in the lab. <!-- [I] -->
 
 Evidence: the file under
 `crates/kdx-legacy/tests/fixtures/lab-2026-11-13/server/`, written by
-Server 1.620 while the OpenKDX CLI logged in, created an account, uploaded,
+Server 1.620 while the lab's command-line client logged in, created an account, uploaded,
 listed files and changed settings (steps 40 to 47). <!-- [O] -->
 
 ## Lines

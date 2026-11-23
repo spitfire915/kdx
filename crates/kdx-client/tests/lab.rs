@@ -336,10 +336,10 @@ lab_test!(lab_server_settings_set_name_round_trip, |lab| {
     let original = c.server_settings().await.unwrap();
     let old_name = original.main.name.clone();
     let mut changed = original.clone();
-    set_server_name(&mut changed, b"OpenKDX Lab").unwrap();
+    set_server_name(&mut changed, b"Renamed Lab").unwrap();
     c.set_server_settings(&changed).await.unwrap();
     let again = c.server_settings().await.unwrap();
-    assert_eq!(again.main.name, b"OpenKDX Lab");
+    assert_eq!(again.main.name, b"Renamed Lab");
     let mut restore = again;
     set_server_name(&mut restore, &old_name).unwrap();
     c.set_server_settings(&restore).await.unwrap();

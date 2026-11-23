@@ -43,7 +43,7 @@ impl ServerFile {
 /// An original data directory. Opening it copies every known file that has
 /// no `<name>.orig` yet to that name, once; an existing `.orig` is never
 /// touched, so the operator can always roll back to what Haxial's program
-/// last wrote before OpenKDX took over.
+/// last wrote before a new server took over.
 #[derive(Debug, Clone)]
 pub struct LegacyDir {
     root: PathBuf,

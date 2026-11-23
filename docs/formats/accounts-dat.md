@@ -2,7 +2,7 @@
 
 **Status:** verified (lab). Byte-exact over eleven lab files; an account
 written by `kdx-legacy` logs in to KDX Server 1.620, which also reads back the
-rewritten file (OpenKDX's `../OpenKDX/lab/legacy.sh`).
+rewritten file (the lab's legacy check).
 
 Account classes, accounts and Folder Access items. The file is XORed with a
 fixed keystream (below); unscrambled it is a `%KDXAKNT` container of three
@@ -13,8 +13,8 @@ list sections whose records are the wire structures of
 
 Evidence: "file NN" is a diff between consecutive files in
 `crates/kdx-legacy/tests/fixtures/lab-2026-11-13/server/accounts/` (one CLI
-command each, listed in that directory's README), written by the OpenKDX
-scenario `../OpenKDX/lab/scenarios/legacy-samples.sh`.
+command each, listed in that directory's README), written by the lab's
+legacy samples scenario.
 
 ## Scrambling
 

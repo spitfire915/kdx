@@ -36,7 +36,7 @@ pub fn login_steps() -> Vec<Step> {
         Step::Expect(MessageType::SET_IDENTITY),
         Step::Send(
             MessageType::USER_LIST,
-            UserRecord::encode_list(&[user(1, "openkdx")]).unwrap(),
+            UserRecord::encode_list(&[user(1, "lab")]).unwrap(),
         ),
         Step::Send(MessageType::SERVER_INFO, server_info(1).encode().unwrap()),
     ]

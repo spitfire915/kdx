@@ -32,8 +32,8 @@ again, even if the live file changes) and `save_*` writes `<name>.tmp` and
 renames it over the live file with the original's permissions. Readers keep
 every byte they do not understand (`ignored_*`, padding, gaps) so that
 `encode(decode(file)) == file` for every file in `tests/fixtures/`
-(`tests/fixtures.rs` walks them all), and OpenKDX's lab check
-(`../OpenKDX/lab/legacy.sh`) feeds what we write back to the originals:
+(`tests/fixtures.rs` walks them all), and the lab's legacy check
+feeds what we write back to the originals:
 `tests/lab.rs` runs when `KDX_LAB_LEGACY_DIR` names the snapshots,
 `tests/hap.rs` when `KDX_LAB_HAP_DIR` names the appearance pack.
 

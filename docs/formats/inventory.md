@@ -11,12 +11,12 @@ Real files written by the original programs, the evidence behind
 2. **Lab-generated, second set**
    (`crates/kdx-legacy/tests/fixtures/lab-2026-11-13/`, committed): 56 files,
    one controlled change each; see below.
-3. **Haxial's appearance pack** (`~openkdx/haxial/legacy/appearances/` on the
+3. **Haxial's appearance pack** (`~/haxial/legacy/appearances/` on the
    lab, never committed): 111 `.hap` files, the only real appearances.
 
 Still wanted: **the maintainer's early-2000s server and client directories**
-(to go under `~openkdx/haxial/legacy/`, never committed). Run OpenKDX's
-`../OpenKDX/lab/inventory.sh` and append its table here when they arrive;
+(to go under `~/haxial/legacy/` on the lab, never committed). Run the lab's
+inventory script and append its table here when they arrive;
 they move the formats from "verified (lab)" to "verified": many accounts,
 custom classes, folder access items, news archives, history logs, a server
 icon, sound lists.
@@ -51,8 +51,7 @@ KDXClient.exe  KDX.stg  Appearances/  Sound Lists/  Downloads/
 
 ## Lab-generated fixtures, second set (2026-11-13)
 
-Written by OpenKDX's `../OpenKDX/lab/scenarios/legacy-samples.sh`,
-`../OpenKDX/lab/scenarios/client-samples.sh` and three one-off probes, one
+Written by the lab's legacy samples and client samples scenarios and three one-off probes, one
 controlled change per file; the README in that directory lists every step.
 17 `KDXServer.stg`, 10 `Accounts.dat`, 7 `News.dat`, one `News Archives`
 file, one `History` file, 3 `Catalog.dat`, one `KDXTrackerServ.stg`,
