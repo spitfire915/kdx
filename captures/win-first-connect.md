@@ -1,4 +1,4 @@
-# Scenario: openkdx-first-connect
+# Scenario: win-first-connect
 
 - Date: 2026-11-10
 - Server: KDX Server 1.620 for Linux
@@ -37,7 +37,7 @@ The lab admin password is `openkdx-lab` (see `captures/README.md`), so the sessi
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-first-connect.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/win-first-connect.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
 
 ```
 4  C->S  127.0.0.1:58652 -> 127.0.0.1:10700  hello

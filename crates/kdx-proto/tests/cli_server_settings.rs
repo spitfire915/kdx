@@ -1,4 +1,4 @@
-//! Checks against `captures/openkdx-server-settings.pcapng`: the OpenKDX client reads and renames.
+//! Checks against `captures/cli-server-settings.pcapng`: the OpenKDX client reads and renames.
 
 use kdx_proto::msg::server_info::ServerSettings;
 use kdx_proto::session::{Header, MessageType};
@@ -8,8 +8,8 @@ mod common;
 
 fn session() -> Vec<(Header, Vec<u8>)> {
     common::session_with_key(
-        include_bytes!("fixtures/openkdx-server-settings-43622.c2s.bin"),
-        include_bytes!("fixtures/openkdx-server-settings-43622.s2c.bin"),
+        include_bytes!("fixtures/cli-server-settings-43622.c2s.bin"),
+        include_bytes!("fixtures/cli-server-settings-43622.s2c.bin"),
         &AccountKey::from_password(b"openkdx-lab"),
     )
 }

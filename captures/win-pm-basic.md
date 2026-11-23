@@ -1,4 +1,4 @@
-# Scenario: openkdx-pm-basic
+# Scenario: win-pm-basic
 
 - Date: 2026-11-10
 - Server: KDX Server 1.620 for Linux
@@ -34,7 +34,7 @@ Server log:
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-pm-basic.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/win-pm-basic.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
 
 ```
 4  C->S  127.0.0.1:58420 -> 127.0.0.1:10700  hello

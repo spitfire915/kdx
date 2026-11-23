@@ -1,4 +1,4 @@
-# Scenario: openkdx-connection-monitor
+# Scenario: cli-connection-monitor
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
@@ -66,7 +66,7 @@ bytes: 4194304
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-connection-monitor.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-connection-monitor.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
 
 ```
 4  C->S  127.0.0.1:46104 -> 127.0.0.1:10700  hello

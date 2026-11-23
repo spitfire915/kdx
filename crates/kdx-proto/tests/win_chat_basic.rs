@@ -1,4 +1,4 @@
-//! Checks against `captures/openkdx-chat-basic.pcapng`: Client 1.600 for Windows as `admin` in the OpenKDX lab.
+//! Checks against `captures/win-chat-basic.pcapng`: Client 1.600 for Windows as `admin` in the OpenKDX lab.
 
 use kdx_proto::msg::chat::ChatText;
 use kdx_proto::session::{Header, MessageType};
@@ -11,8 +11,8 @@ const PASSWORD: &[u8] = b"openkdx-lab";
 
 fn session() -> Vec<(Header, Vec<u8>)> {
     common::session_with_key(
-        include_bytes!("fixtures/openkdx-chat-basic.c2s.bin"),
-        include_bytes!("fixtures/openkdx-chat-basic.s2c.bin"),
+        include_bytes!("fixtures/win-chat-basic.c2s.bin"),
+        include_bytes!("fixtures/win-chat-basic.s2c.bin"),
         &AccountKey::from_password(PASSWORD),
     )
 }

@@ -1,4 +1,4 @@
-# Scenario: openkdx-broadcast
+# Scenario: cli-broadcast
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
@@ -77,7 +77,7 @@ nick: #2
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-broadcast.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-broadcast.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
 
 ```
 4  C->S  127.0.0.1:44198 -> 127.0.0.1:10700  hello

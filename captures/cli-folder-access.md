@@ -1,4 +1,4 @@
-# Scenario: openkdx-folder-access
+# Scenario: cli-folder-access
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
@@ -68,7 +68,7 @@ UL         uploads  0x0    Uploads folder.
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-folder-access.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-folder-access.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
 
 ```
 4  C->S  127.0.0.1:52352 -> 127.0.0.1:10700  hello

@@ -65,7 +65,7 @@ closes the new one and says nothing. If the address is on the server's ban list,
 the server rejects the connection and logs it. Bans come from [150 Disconnect
 User](messages/administration.md#m150) and from the flood bans below. The ban
 list never matches 127.0.0.1: a guest logged in from loopback right after a
-10 s ban. <!-- [S `FUN_08061398`; O `captures/openkdx-disconnect-ban.pcapng`
+10 s ban. <!-- [S `FUN_08061398`; O `captures/cli-disconnect-ban.pcapng`
 frames 78 to 87] -->
 
 The server also counts the requests on each connection. <!-- [S `FUN_0804fc40`]

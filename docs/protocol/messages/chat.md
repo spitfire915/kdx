@@ -211,7 +211,7 @@ Struct `ChatText` (dynamic):<a id="sChatText"></a>
 |---|---|---|---|---|
 | 0x00 | 4 | `u32` | `chat_id` |  |
 | 0x04 | 4 | `u32` | `user_id` | The server fills in the sender. |
-| 0x08 | 2 | `u16` | `flags` | 1: an action. Client 1.600 sets it when the user types `/me `, and sends the text without that prefix. <!-- [O `captures/openkdx-chat-basic.pcapng` frames 24, 25] --> |
+| 0x08 | 2 | `u16` | `flags` | 1: an action. Client 1.600 sets it when the user types `/me `, and sends the text without that prefix. <!-- [O `captures/win-chat-basic.pcapng` frames 24, 25] --> |
 | 0x0a | 2 | `u8[2]` | `ignored_0a` |  |
 | 0x0c | rest | `str` | `text` | At most 0x1000 bytes. |
 

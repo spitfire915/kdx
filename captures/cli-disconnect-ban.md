@@ -1,4 +1,4 @@
-# Scenario: openkdx-disconnect-ban
+# Scenario: cli-disconnect-ban
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux

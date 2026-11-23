@@ -1,4 +1,4 @@
-# Scenario: openkdx-guest-login
+# Scenario: win-guest-login
 
 - Date: 2026-11-10
 - Server: KDX Server 1.620 for Linux
@@ -28,7 +28,7 @@ Server log:
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-guest-login.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/win-guest-login.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
 
 ```
 4  C->S  127.0.0.1:50750 -> 127.0.0.1:10700  hello

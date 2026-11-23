@@ -1,4 +1,4 @@
-# Scenario: openkdx-tracker-basic
+# Scenario: win-tracker-basic
 
 - Date: 2026-11-10
 - Server: KDX Server 1.620 for Linux
@@ -35,7 +35,7 @@ Server log:
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-tracker-basic.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/win-tracker-basic.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
 
 ```
 1  127.0.0.1:44251 -> 127.0.0.1:10800  UDP registration

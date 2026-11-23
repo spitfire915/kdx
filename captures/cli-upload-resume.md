@@ -1,4 +1,4 @@
-# Scenario: openkdx-upload-resume
+# Scenario: cli-upload-resume
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
@@ -70,7 +70,7 @@ bytes: 262144
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-upload-resume.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-upload-resume.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
 
 ```
 4  C->S  127.0.0.1:36654 -> 127.0.0.1:10700  hello

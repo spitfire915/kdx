@@ -1,4 +1,4 @@
-# Scenario: openkdx-server-settings
+# Scenario: cli-server-settings
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
@@ -64,7 +64,7 @@ $ openkdx -l 'admin' --nick openkdx server set-name New Server
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-server-settings.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-server-settings.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
 
 ```
 4  C->S  127.0.0.1:43622 -> 127.0.0.1:10700  hello

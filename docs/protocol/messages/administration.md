@@ -203,7 +203,7 @@ Struct `ServerSettings` (dynamic):<a id="sServerSettings"></a>
 | 0x0a | 2 | `u8[2]` | `ignored` |  |
 | 0x0c | 88 | [`SettingsSection`](#sSettingsSection)`[11]` | `sections` | not stored. Derived from the sections on encode; an empty section gets the running offset where Rust `placeholders` says so, else 0, 0. |
 | 0x64 | 11 | `u8[11]` | `value_64` | `01 01 01 01 00 01 00 02 00 00 00` in a 171. In a [172 Set Server Settings](#m172), 0x6b is 0, and so is 0x69 if the icon is absent. |
-| 0x6f | 1 | `u8` | `tracker_count` | not stored. The number of records in section 1. <!-- [O `captures/openkdx-server-settings.pcapng`] --> |
+| 0x6f | 1 | `u8` | `tracker_count` | not stored. The number of records in section 1. <!-- [O `captures/cli-server-settings.pcapng`] --> |
 | 0x70 | rest | `u8[]` | `main` | The sections, each at its table offset; section 0 is a [`MainSettings`](#sMainSettings). Each section starts on a multiple of 4; the sections that follow are Rust `trackers` (1, [`TrackerEntry`](#sTrackerEntry) records back to back), Rust `allow_deny` (2, [`AddressRule`](#sAddressRule) records), Rust `greeting` (3, the layout of [107 Server Greeting](session.md#m107)), Rust `icon` (5, the bytes of [106 Server Icon](session.md#m106)), Rust `chats` (7, [219 Chat Info](chat.md#m219) records back to back; empty in every 171 seen, filled in the settings file), Rust `other` (4, 6, 8 to 10, never seen non-empty), and Rust `trailing` after the last section's padding, never seen non-empty. |
 
 Struct `SettingsSection` (8 bytes):<a id="sSettingsSection"></a>
@@ -217,7 +217,7 @@ The main section is entry 0. It starts at 0x70 and is 0x68 bytes in the
 captures. Its offsets below are from its own start; add 0x70 to get the offset
 in the blob. The fields beyond `flags`, the speed limit and the name were pinned
 by changing one setting at a time in the server's dialog and diffing its
-settings file. <!-- [O `captures/openkdx-server-settings.pcapng`] -->
+settings file. <!-- [O `captures/cli-server-settings.pcapng`] -->
 
 Struct `MainSettings` (dynamic):<a id="sMainSettings"></a>
 
@@ -237,7 +237,7 @@ Struct `MainSettings` (dynamic):<a id="sMainSettings"></a>
 | 0x2c | 12 | `u8[12]` | `ignored_2c` | Differs per server directory; probably an identifier. <!-- [I] --> |
 | 0x38 | 4 | `u32` | `total_outgoing_speed_limit` | Bytes per second. 0x5000, or 0 when off. 0xa8 in the blob. |
 | 0x3c | 22 | `u8[22]` | `ignored_3c` |  |
-| 0x52 | 1 | `u8` | `name_len` | 0xc2 in the blob. A [172 Set Server Settings](#m172) that changes the name without this byte leaves the server with the old length: `OpenKDX Lab` read back as `OpenKDX La`. <!-- [O `captures/openkdx-server-settings.pcapng` frames 10, 29] --> |
+| 0x52 | 1 | `u8` | `name_len` | 0xc2 in the blob. A [172 Set Server Settings](#m172) that changes the name without this byte leaves the server with the old length: `OpenKDX Lab` read back as `OpenKDX La`. <!-- [O `captures/cli-server-settings.pcapng` frames 10, 29] --> |
 | 0x53 | 1 | `u8` | `description_len` |  |
 | 0x54 | 1 | `u8` | `ignored_54` | 0. |
 | 0x55 | 1 | `u8` | `address_len` |  |
@@ -307,7 +307,7 @@ still holds it.
 7 and keeps the others as bytes. It re-encodes all six blobs of
 `captures/linux-server-settings.pcapng`, the [171 Server Settings Info](#m171)
 at frame 116 of `captures/probe.pcapng`, and every blob of
-`captures/openkdx-server-settings.pcapng` byte for byte.
+`captures/cli-server-settings.pcapng` byte for byte.
 
 ## <a id="m172"></a>172 Set Server Settings
 Initiator: Client. <!-- [S `FUN_0805f638`] -->

@@ -1,4 +1,4 @@
-//! Checks against `captures/openkdx-connection-monitor.pcapng`: 143 while another session downloads 4 MiB.
+//! Checks against `captures/cli-connection-monitor.pcapng`: 143 while another session downloads 4 MiB.
 
 use kdx_proto::msg::admin::MonitoredConnection;
 use kdx_proto::session::MessageType;
@@ -12,8 +12,8 @@ const PASSWORD: &[u8] = b"openkdx-lab";
 #[test]
 fn transfer_row_has_id_total_and_path() {
     let session = common::session_with_key(
-        include_bytes!("fixtures/openkdx-connection-monitor-44682.c2s.bin"),
-        include_bytes!("fixtures/openkdx-connection-monitor-44682.s2c.bin"),
+        include_bytes!("fixtures/cli-connection-monitor-44682.c2s.bin"),
+        include_bytes!("fixtures/cli-connection-monitor-44682.s2c.bin"),
         &AccountKey::from_password(PASSWORD),
     );
     let (_, wire) = session

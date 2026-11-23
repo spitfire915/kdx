@@ -103,7 +103,7 @@ If the status is not OK, `auth` is all zeros, except the key word, which is
 `peer_nonce[4..8] XOR 0x201f7790`. <!-- [S `FUN_0808751c`] --> Server 1.620
 answers a wrong password this way with status `1`, a zero response, and then
 closes the connection; its log says `Login failed`. <!-- [O
-`captures/openkdx-disconnect-ban.pcapng` frame 9] -->
+`captures/cli-disconnect-ban.pcapng` frame 9] -->
 `kdx_proto::handshake::Status::Failed` is that status.
 
 This computation gives both proofs in the capture exactly: <!-- [O] -->

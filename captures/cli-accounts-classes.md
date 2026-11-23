@@ -1,4 +1,4 @@
-# Scenario: openkdx-accounts-classes
+# Scenario: cli-accounts-classes
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
@@ -88,7 +88,7 @@ guest  Guest          2      2026-11-13 14:53:39  1900-01-01 00:00:00
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-accounts-classes.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-accounts-classes.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
 
 ```
 4  C->S  127.0.0.1:46784 -> 127.0.0.1:10700  hello

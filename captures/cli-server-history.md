@@ -1,4 +1,4 @@
-# Scenario: openkdx-server-history
+# Scenario: cli-server-history
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
@@ -82,7 +82,7 @@ detail:
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-server-history.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-server-history.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
 
 ```
 4  C->S  127.0.0.1:37426 -> 127.0.0.1:10700  hello

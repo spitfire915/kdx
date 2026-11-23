@@ -1,4 +1,4 @@
-# Scenario: openkdx-chat-basic
+# Scenario: win-chat-basic
 
 - Date: 2026-11-10
 - Server: KDX Server 1.620 for Linux
@@ -32,7 +32,7 @@ Server log:
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-chat-basic.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/win-chat-basic.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
 
 ```
 4  C->S  127.0.0.1:37182 -> 127.0.0.1:10700  hello

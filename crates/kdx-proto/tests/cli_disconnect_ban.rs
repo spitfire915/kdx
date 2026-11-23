@@ -1,4 +1,4 @@
-//! Checks against `captures/openkdx-disconnect-ban.pcapng`: the OpenKDX client in the OpenKDX lab.
+//! Checks against `captures/cli-disconnect-ban.pcapng`: the OpenKDX client in the OpenKDX lab.
 
 use kdx_proto::handshake::{Hello, Proof, Status};
 use kdx_proto::msg::admin::DisconnectMessage;
@@ -10,8 +10,8 @@ mod common;
 /// Frame 9: the server's proof to a wrong password has status 1 and only the auth word set.
 #[test]
 fn wrong_password_gets_proof_status_1_and_auth_word() {
-    let c2s = include_bytes!("fixtures/openkdx-disconnect-ban-54320.c2s.bin");
-    let s2c = include_bytes!("fixtures/openkdx-disconnect-ban-54320.s2c.bin");
+    let c2s = include_bytes!("fixtures/cli-disconnect-ban-54320.c2s.bin");
+    let s2c = include_bytes!("fixtures/cli-disconnect-ban-54320.s2c.bin");
     let (client_hello, hello_len) = Hello::decode(c2s).unwrap();
     let (_, server_hello_len) = Hello::decode(s2c).unwrap();
     let proof = Proof::decode(&s2c[server_hello_len..]).unwrap();
@@ -35,8 +35,8 @@ fn wrong_password_gets_proof_status_1_and_auth_word() {
 #[test]
 fn ban_message_carries_flag_2() {
     let session = common::session_with_key(
-        include_bytes!("fixtures/openkdx-disconnect-ban-54332.c2s.bin"),
-        include_bytes!("fixtures/openkdx-disconnect-ban-54332.s2c.bin"),
+        include_bytes!("fixtures/cli-disconnect-ban-54332.c2s.bin"),
+        include_bytes!("fixtures/cli-disconnect-ban-54332.s2c.bin"),
         &AccountKey::EMPTY_PASSWORD,
     );
     let (_, wire): &(Header, Vec<u8>) = session

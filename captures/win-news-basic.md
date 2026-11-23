@@ -1,4 +1,4 @@
-# Scenario: openkdx-news-basic
+# Scenario: win-news-basic
 
 - Date: 2026-11-10
 - Server: KDX Server 1.620 for Linux
@@ -31,7 +31,7 @@ Server log:
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-news-basic.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/win-news-basic.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
 
 ```
 4  C->S  127.0.0.1:48510 -> 127.0.0.1:10700  hello

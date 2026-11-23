@@ -1,4 +1,4 @@
-//! Checks against `captures/openkdx-upload-resume.pcapng`: the OpenKDX client cuts and resumes a 256 KiB upload.
+//! Checks against `captures/cli-upload-resume.pcapng`: the OpenKDX client cuts and resumes a 256 KiB upload.
 
 use kdx_proto::msg::file::FileListEntry;
 use kdx_proto::msg::transfer::UploadReply;
@@ -18,8 +18,8 @@ fn session(c2s: &[u8], s2c: &[u8]) -> Vec<(Header, Vec<u8>)> {
 #[test]
 fn prt_partial_is_listed() {
     let session = session(
-        include_bytes!("fixtures/openkdx-upload-resume-36672.c2s.bin"),
-        include_bytes!("fixtures/openkdx-upload-resume-36672.s2c.bin"),
+        include_bytes!("fixtures/cli-upload-resume-36672.c2s.bin"),
+        include_bytes!("fixtures/cli-upload-resume-36672.s2c.bin"),
     );
     let (_, wire) = session
         .iter()
@@ -36,8 +36,8 @@ fn prt_partial_is_listed() {
 #[test]
 fn server_offers_0x20000_after_a_150000_byte_cut() {
     let parent = session(
-        include_bytes!("fixtures/openkdx-upload-resume-36678.c2s.bin"),
-        include_bytes!("fixtures/openkdx-upload-resume-36678.s2c.bin"),
+        include_bytes!("fixtures/cli-upload-resume-36678.c2s.bin"),
+        include_bytes!("fixtures/cli-upload-resume-36678.s2c.bin"),
     );
     let (_, info) = parent
         .iter()
@@ -45,8 +45,8 @@ fn server_offers_0x20000_after_a_150000_byte_cut() {
         .expect("a 105");
     let key = AccountKey(ServerInfo::decode(info).unwrap().session_key);
     let session = common::session_with_key(
-        include_bytes!("fixtures/openkdx-upload-resume-36680.c2s.bin"),
-        include_bytes!("fixtures/openkdx-upload-resume-36680.s2c.bin"),
+        include_bytes!("fixtures/cli-upload-resume-36680.c2s.bin"),
+        include_bytes!("fixtures/cli-upload-resume-36680.s2c.bin"),
         &key,
     );
     let (_, wire) = session
