@@ -4,7 +4,6 @@
 - Server: KDX Server 1.620 for Linux
 - Programs: KDX Server 1.620 (Linux), KDX Client 1.600 (Windows under Wine 6.0.3)
 - Server state: fresh first-run setup; admin `admin`, password `openkdx-lab` (published), guest access on
-- Produced by: `lab/scenarios/guest-login.sh` in https://github.com/spitfire915/OpenKDX (the OpenKDX lab)
 - Frames: 14
 
 
@@ -28,7 +27,7 @@ Server log:
 
 ## Messages
 
-Decoded by `kdx-dissect captures/win-guest-login.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/win-guest-login.pcapng --inventory --password openkdx-lab`.
 
 ```
 4  C->S  127.0.0.1:50750 -> 127.0.0.1:10700  hello

@@ -2,9 +2,8 @@
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
-- Programs: KDX Server 1.620 (Linux), OpenKDX client (openkdx CLI, 05965e2)
+- Programs: KDX Server 1.620 (Linux), the command-line client of the lab
 - Server state: fresh first-run setup; admin `admin`, password `openkdx-lab` (published), guest access on
-- Produced by: `lab/scenarios/server-settings.sh` in https://github.com/spitfire915/OpenKDX (the OpenKDX lab)
 - Frames: 64
 
 
@@ -12,46 +11,48 @@
 
 1. Start KDX Server 1.620 (Linux) in the sandbox; first-run setup creates admin 'admin', guest access enabled.
 1. Start capturing loopback.
-1. Admin: server settings (170/171), server set-name 'OpenKDX Lab' (170/171 then 172 with section 0's name and length byte changed → Status), server settings again.
-1. A second login: 105 Server Info now names the server 'OpenKDX Lab'.
+1. Admin: server settings (170/171), server set-name a new name (170/171 then 172 with section 0's name and length byte changed → Status), server settings again.
+1. A second login: 105 Server Info now names the server a new name.
 1. Restore the name.
 
 ## Observations
+
+Names in the log and transcript are shortened: the command-line client's nick and program name appear as `lab`.
 
 Server log:
 
 ```
 26/11/13 02:54:16 PM [] KDX Server started o
 26/11/13 02:54:17 PM [1 unnamed] Incoming connection from 127.0.0.1:43622
-26/11/13 02:54:17 PM [1 unnamed] Set Name: <openkdx> (admin)
-26/11/13 02:54:17 PM [1 openkdx] Disconnected
+26/11/13 02:54:17 PM [1 unnamed] Set Name: <lab> (admin)
+26/11/13 02:54:17 PM [1 lab] Disconnected
 26/11/13 02:54:17 PM [2 unnamed] Incoming connection from 127.0.0.1:43628
-26/11/13 02:54:17 PM [2 unnamed] Set Name: <openkdx> (admin)
-26/11/13 02:54:17 PM [2 openkdx] Disconnected
+26/11/13 02:54:17 PM [2 unnamed] Set Name: <lab> (admin)
+26/11/13 02:54:17 PM [2 lab] Disconnected
 26/11/13 02:54:17 PM [3 unnamed] Incoming connection from 127.0.0.1:43636
-26/11/13 02:54:17 PM [3 unnamed] Set Name: <openkdx> (admin)
-26/11/13 02:54:17 PM [3 openkdx] Disconnected
+26/11/13 02:54:17 PM [3 unnamed] Set Name: <lab> (admin)
+26/11/13 02:54:17 PM [3 lab] Disconnected
 ```
 
 ## Client transcript
 
 ```
-$ openkdx -l 'admin' --nick openkdx run --keep-going
+$ lab -l 'admin' --nick lab run --keep-going
 > server settings
 version: 1
 name: New Server
 greeting_enabled: false
 total_outgoing_speed_limit: 0
 section_lengths: [104,0,0,0,0,0,0,0,0,0,0]
-> server set-name "OpenKDX Lab"
+> server set-name "<new name>"
 > server settings
 version: 1
-name: OpenKDX Lab
+name: <new name>
 greeting_enabled: false
 total_outgoing_speed_limit: 0
 section_lengths: [104,0,0,0,0,0,0,0,0,0,0]
-$ openkdx -l 'admin' --nick openkdx login
-name: OpenKDX Lab
+$ lab -l 'admin' --nick lab login
+name: <new name>
 description: 
 version: 1.620
 address: 
@@ -59,12 +60,12 @@ user_id: 2
 users: 1
 transfer_port: 0
 can_modify_settings: 1
-$ openkdx -l 'admin' --nick openkdx server set-name New Server
+$ lab -l 'admin' --nick lab server set-name New Server
 ```
 
 ## Messages
 
-Decoded by `kdx-dissect captures/cli-server-settings.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-server-settings.pcapng --inventory --password openkdx-lab`.
 
 ```
 4  C->S  127.0.0.1:43622 -> 127.0.0.1:10700  hello

@@ -4,7 +4,6 @@
 - Server: KDX Server 1.620 for Linux
 - Programs: KDX Server 1.620 (Linux), KDX Client 1.600 (Windows under Wine 6.0.3)
 - Server state: fresh first-run setup; admin `admin`, password `openkdx-lab` (published), guest access on
-- Produced by: `lab/scenarios/first-connect.sh` in https://github.com/spitfire915/OpenKDX (the OpenKDX lab)
 - Frames: 14
 
 
@@ -28,7 +27,7 @@ Server log:
 
 ## Decoded handshake
 
- The first two payloads, XOR stream undone per the reference spec (`handshake.md`):
+ The first two payloads, XOR stream undone per the reference spec (`docs/protocol/handshake.md`):
 
 - client → server, 44 bytes: protocol `%TXP` sub `%KDX` version 1 sub_version 0x10 name_len 5 challenge 0x40d nonce `49f403a414c2980df0150354` name `admin`
 - server → client, 36 bytes: protocol `%TXP` sub `%KDX` version 1 sub_version 0x20 name_len 0 challenge 0x373 nonce `d51503a414c2987f0d832176` name ``
@@ -37,7 +36,7 @@ The lab admin password is `openkdx-lab` (see `captures/README.md`), so the sessi
 
 ## Messages
 
-Decoded by `kdx-dissect captures/win-first-connect.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/win-first-connect.pcapng --inventory --password openkdx-lab`.
 
 ```
 4  C->S  127.0.0.1:58652 -> 127.0.0.1:10700  hello

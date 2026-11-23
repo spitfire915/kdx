@@ -2,9 +2,8 @@
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
-- Programs: KDX Server 1.620 (Linux), OpenKDX client (openkdx CLI, 05965e2)
+- Programs: KDX Server 1.620 (Linux), the command-line client of the lab
 - Server state: fresh first-run setup; admin `admin`, password `openkdx-lab` (published), guest access on
-- Produced by: `lab/scenarios/accounts-classes.sh` in https://github.com/spitfire915/OpenKDX (the OpenKDX lab)
 - Frames: 38
 
 
@@ -16,19 +15,21 @@
 
 ## Observations
 
+Names in the log and transcript are shortened: the command-line client's nick and program name appear as `lab`.
+
 Server log:
 
 ```
 26/11/13 02:53:47 PM [] KDX Server started o
 26/11/13 02:53:48 PM [1 unnamed] Incoming connection from 127.0.0.1:46784
-26/11/13 02:53:48 PM [1 unnamed] Set Name: <openkdx> (admin)
-26/11/13 02:53:48 PM [1 openkdx] Disconnected
+26/11/13 02:53:48 PM [1 unnamed] Set Name: <lab> (admin)
+26/11/13 02:53:48 PM [1 lab] Disconnected
 ```
 
 ## Client transcript
 
 ```
-$ openkdx -l 'admin' --nick openkdx run --keep-going
+$ lab -l 'admin' --nick lab run --keep-going
 > classes list
 index  name            speed_limit  color   privileges
 0      Administrator   0            ff0000  unnamed-bit-2,can-login,download,upload,create-aliases,move,rename,delete,set-file-folder-attributes,allow-simultaneous-downloads,view-folder-access,modify-folder-access,join-chat,send-chat,send-messages,broadcast,create-private-chat,set-chat-topic,create-modify-chats,get-user-info,disconnect-users,ban-users,view-accounts,create-accounts,modify-accounts,change-own-password,use-any-name,modify-server-settings,view-server-history,shutdown-server,disable-encryption,view-news,post-news,delete-news-messages,create-modify-newsgroups,see-logins-in-news,view-processes
@@ -88,7 +89,7 @@ guest  Guest          2      2026-11-13 14:53:39  1900-01-01 00:00:00
 
 ## Messages
 
-Decoded by `kdx-dissect captures/cli-accounts-classes.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-accounts-classes.pcapng --inventory --password openkdx-lab`.
 
 ```
 4  C->S  127.0.0.1:46784 -> 127.0.0.1:10700  hello

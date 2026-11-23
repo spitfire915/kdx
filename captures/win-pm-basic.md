@@ -4,7 +4,6 @@
 - Server: KDX Server 1.620 for Linux
 - Programs: KDX Server 1.620 (Linux), KDX Client 1.600 (Windows under Wine 6.0.3), KDX Client 1.620 beta 5 (Linux)
 - Server state: fresh first-run setup; admin `admin`, password `openkdx-lab` (published), guest access on
-- Produced by: `lab/scenarios/pm-basic.sh` in https://github.com/spitfire915/OpenKDX (the OpenKDX lab)
 - Frames: 38
 
 
@@ -34,7 +33,7 @@ Server log:
 
 ## Messages
 
-Decoded by `kdx-dissect captures/win-pm-basic.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/win-pm-basic.pcapng --inventory --password openkdx-lab`.
 
 ```
 4  C->S  127.0.0.1:58420 -> 127.0.0.1:10700  hello
