@@ -44,8 +44,7 @@ fn connections() -> Vec<String> {
 /// The key of a connection, as `kdx-proto/tests/fixtures/README.md` gives it.
 fn key(name: &str) -> AccountKey {
     let parent = match name {
-        // The OpenKDX lab: the victim is a guest; a transfer connection takes its
-        // parent's session key; everything else logs in with the published password.
+        // A guest, a transfer connection with its parent's key, then the published password.
         "cli-disconnect-ban-54332" => return AccountKey::EMPTY_PASSWORD,
         "cli-upload-resume-36680" => "cli-upload-resume-36678",
         _ if name.starts_with("cli-") || name.starts_with("win-") => {

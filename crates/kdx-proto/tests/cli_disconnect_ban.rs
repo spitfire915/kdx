@@ -1,4 +1,4 @@
-//! Checks against `captures/cli-disconnect-ban.pcapng`: the OpenKDX client in the OpenKDX lab.
+//! Checks against `captures/cli-disconnect-ban.pcapng`: the command-line client of the lab.
 
 use kdx_proto::handshake::{Hello, Proof, Status};
 use kdx_proto::msg::admin::DisconnectMessage;

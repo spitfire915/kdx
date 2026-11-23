@@ -15,7 +15,7 @@ const PASSWORDS: [&str; 9] = [
     "rs-test-pw",
     "rs-test-pw2",
     "rs-test-pw3",
-    // The OpenKDX lab (captures/openkdx-*): its admin password is published.
+    // The published admin password of the `cli-` and `win-` captures.
     "openkdx-lab",
     "wrong-password",
 ];

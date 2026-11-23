@@ -1,4 +1,4 @@
-//! Checks against `captures/cli-upload-resume.pcapng`: the OpenKDX client cuts and resumes a 256 KiB upload.
+//! Checks against `captures/cli-upload-resume.pcapng`: the command-line client cuts and resumes a 256 KiB upload.
 
 use kdx_proto::msg::file::FileListEntry;
 use kdx_proto::msg::transfer::UploadReply;
@@ -8,15 +8,12 @@ use kdx_proto::AccountKey;
 
 mod common;
 
-const PASSWORD: &[u8] = b"openkdx-lab";
-
 fn session(c2s: &[u8], s2c: &[u8]) -> Vec<(Header, Vec<u8>)> {
-    common::session_with_key(c2s, s2c, &AccountKey::from_password(PASSWORD))
+    common::session_with_key(c2s, s2c, &AccountKey::from_password(common::LAB_PASSWORD))
 }
 
-/// Frame 61: after a cut at 150000 bytes the folder lists `big.bin.prt`.
-#[test]
-fn prt_partial_is_listed() {
+/// The size that frame 61 gives the `big.bin.prt` partial.
+fn prt_size() -> u64 {
     let session = session(
         include_bytes!("fixtures/cli-upload-resume-36672.c2s.bin"),
         include_bytes!("fixtures/cli-upload-resume-36672.s2c.bin"),
@@ -26,15 +23,17 @@ fn prt_partial_is_listed() {
         .find(|(h, _)| h.kind == MessageType::FILE_LIST)
         .expect("a 401");
     let entries = FileListEntry::decode_list(wire).unwrap();
-    let names: Vec<&[u8]> = entries.iter().map(|e| e.name.as_slice()).collect();
-    assert!(names.contains(&&b"big.bin.prt"[..]), "{names:?}");
+    let prt = entries
+        .iter()
+        .find(|e| e.name == b"big.bin.prt")
+        .unwrap_or_else(|| panic!("no partial in {entries:#?}"));
+    prt.size
 }
 
-/// Frame 88: the server kept 131072 bytes of the 150000 and offers 0x20000.
+/// The offset that frame 88, on the transfer connection of the resumed upload, offers.
 ///
-/// The upload runs on a transfer connection keyed by the parent session's 105.
-#[test]
-fn server_offers_0x20000_after_a_150000_byte_cut() {
+/// The transfer connection is keyed by the parent session's 105.
+fn offered_offset() -> u64 {
     let parent = session(
         include_bytes!("fixtures/cli-upload-resume-36678.c2s.bin"),
         include_bytes!("fixtures/cli-upload-resume-36678.s2c.bin"),
@@ -53,7 +52,15 @@ fn server_offers_0x20000_after_a_150000_byte_cut() {
         .iter()
         .find(|(h, _)| h.kind == MessageType::UPLOAD_FILE_REPLY)
         .expect("a 416");
-    let reply = UploadReply::decode(wire).unwrap();
-    assert_eq!(reply.data_offset, 0x20000);
-    assert_eq!(reply.data_offset % 0x1000, 0);
+    UploadReply::decode(wire).unwrap().data_offset
+}
+
+/// Frames 61 and 88: the 401 lists the partial at 0x20000 bytes, and the 416 offers 0x20000.
+///
+/// The client was cut after 150000 bytes, and rounding that down to a multiple of 0x1000
+/// would give 0x24000, so the offset is the size of the `.prt` on disk.
+#[test]
+fn prt_size_is_the_resume_offset() {
+    assert_eq!(prt_size(), 0x20000);
+    assert_eq!(offered_offset(), prt_size());
 }
