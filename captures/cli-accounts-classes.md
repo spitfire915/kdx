@@ -15,7 +15,7 @@
 
 ## Observations
 
-Names in the log and transcript are shortened: the command-line client's nick and program name appear as `lab`.
+Names in the log and transcript are replaced: `lab` stands for the command-line client's command name and nick.
 
 Server log:
 

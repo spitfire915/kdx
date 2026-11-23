@@ -4,7 +4,8 @@ use kdx_proto::handshake::{Hello, Proof};
 use kdx_proto::session::{Header, SessionCipher};
 use kdx_proto::AccountKey;
 
-/// The published password of the admin account of the lab that recorded the `cli-` and `win-` captures.
+/// The published password of the admin account of the lab that recorded the
+/// `cli-` and `win-` captures.
 #[allow(dead_code)]
 pub const LAB_PASSWORD: &[u8] = b"openkdx-lab";
 
