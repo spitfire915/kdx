@@ -213,7 +213,9 @@ zeros to a multiple of 4, but not the icon: a blob whose icon length is not a
 multiple of 4 ends unpadded. <!-- [S `FUN_0805f754`] --> Rust `layout` keeps
 the order and the bytes between the sections of a blob laid out otherwise, so
 it encodes back byte for byte. Bytes after the last section and its padding are
-Rust `trailing`; they were never seen non-empty.
+Rust `trailing`; they were never seen non-empty. A section's length comes from
+the table, so its last record may end without its padding; the record keeps
+the bytes it has. <!-- [I] -->
 
 | Index | Rust field | Contents |
 |---|---|---|
@@ -263,7 +265,7 @@ Struct `MainSettings` (dynamic):<a id="sMainSettings"></a>
 | 0x5c | `name_len` | `str` | `name` | 0xcc in the blob. |
 |  | `description_len` | `str` | `description` |  |
 |  | `address_len` | `str` | `address` |  |
-|  | pad4 | `u8[]` | `padding` | Zeros; kept only when they are not. |
+|  | pad4 | `u8[]` | `padding` | Zeros; kept when they are not or when the section ends first. |
 
 No capture has a tracker or allow/deny record. Their layouts are from the
 server's parser and builder.
@@ -299,7 +301,7 @@ Struct `TrackerEntry` (dynamic):<a id="sTrackerEntry"></a>
 |  | `str_1d_len` | `str` | `str_1d` |  |
 |  | `str_1e_len` | `str` | `str_1e` |  |
 |  | `str_1f_len` | `str` | `str_1f` |  |
-|  | pad4 | `u8[]` | `padding` | Zeros; kept only when they are not. |
+|  | pad4 | `u8[]` | `padding` | Zeros; kept when they are not or when the section ends first. |
 
 Struct `AddressRule` (dynamic):<a id="sAddressRule"></a>
 
@@ -317,7 +319,7 @@ Struct `AddressRule` (dynamic):<a id="sAddressRule"></a>
 |  | `name_len` | `str` | `name` |  |
 |  | `comments_len` | `str` | `comments` |  |
 |  | `str_1b_len` | `str` | `str_1b` |  |
-|  | pad4 | `u8[]` | `padding` | Zeros; kept only when they are not. |
+|  | pad4 | `u8[]` | `padding` | Zeros; kept when they are not or when the section ends first. |
 
 These are the section table entries in the captures, as offset and
 length: <!-- [O] -->

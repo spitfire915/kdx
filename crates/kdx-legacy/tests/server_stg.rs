@@ -104,7 +104,7 @@ fn set_name_recomputes_length_and_pad() {
     assert_eq!(again.main.name.len(), 63);
     // 0x5c + 63 = 0x9b, padded to 0x9c.
     assert_eq!(again.sections()[0].len, 0x9c);
-    assert_eq!(again.main.padding, [] as [u8; 0]);
+    assert_eq!(again.main.padding, None);
     assert_eq!(encode_server_stg(&again).unwrap(), bytes);
 }
 
