@@ -189,6 +189,10 @@ pub struct SettingsLayout {
     /// The table offset of an empty section that has a placeholder, when it
     /// is not where the server would put it.
     pub empty_offsets: [Option<u32>; ServerSettings::SECTIONS],
+    /// The tracker count at 0x6f when it is not the number of
+    /// [`ServerSettings::trackers`]; the server reads the records whatever
+    /// it says.
+    pub tracker_count_raw: Option<u8>,
 }
 
 /// The server settings blob of 171 Server Settings Info and 172 Set Server Settings.
@@ -306,7 +310,7 @@ impl ServerSettings {
         let main = MainSettings::decode(sections[Self::MAIN])?;
         let trackers = records(sections[Self::TRACKERS], TrackerEntry::decode)?;
         if usize::from(tracker_count) != trackers.len().min(255) {
-            return Err(DecodeError::Invalid("settings tracker count"));
+            layout.tracker_count_raw = Some(tracker_count);
         }
         let allow_deny = records(sections[Self::ALLOW_DENY], AddressRule::decode)?;
         let greeting = match sections[Self::GREETING] {
@@ -366,7 +370,10 @@ impl ServerSettings {
             out[at + 4..at + 8].copy_from_slice(&section.len.to_be_bytes());
         }
         out[0x64..Self::HEADER_LEN - 1].copy_from_slice(&self.value_64);
-        out[Self::HEADER_LEN - 1] = self.trackers.len().min(255) as u8;
+        out[Self::HEADER_LEN - 1] = self
+            .layout
+            .tracker_count_raw
+            .unwrap_or(self.trackers.len().min(255) as u8);
         let mut prev = None;
         for i in order {
             match &self.layout.gaps[i] {

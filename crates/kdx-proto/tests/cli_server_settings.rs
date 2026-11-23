@@ -258,6 +258,18 @@ fn tracker_section_ending_unpadded_round_trips() {
     assert_eq!(decoded.encode().unwrap(), blob);
 }
 
+/// Byte 0x6f is the tracker count; the records are read from the section
+/// whatever it says, and the byte is written back as it was.
+#[test]
+fn tracker_count_byte_may_disagree_with_the_records() {
+    let mut blob = ServerSettings::default().encode().unwrap();
+    blob[0x6f] = 1;
+    let decoded = ServerSettings::decode(&blob).unwrap();
+    assert!(decoded.trackers.is_empty());
+    assert_eq!(decoded.layout.tracker_count_raw, Some(1));
+    assert_eq!(decoded.encode().unwrap(), blob);
+}
+
 /// Bytes between two sections are kept, whatever they are.
 #[test]
 fn nonzero_gap_between_sections_round_trips() {
