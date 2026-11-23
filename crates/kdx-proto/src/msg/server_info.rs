@@ -189,6 +189,10 @@ pub struct SettingsLayout {
     /// The table offset of an empty section that has a placeholder, when it
     /// is not where the server would put it.
     pub empty_offsets: [Option<u32>; ServerSettings::SECTIONS],
+    /// The tracker count at 0x6f when it is not the number of
+    /// [`ServerSettings::trackers`]; the server reads the records whatever
+    /// it says.
+    pub tracker_count_raw: Option<u8>,
 }
 
 /// The server settings blob of 171 Server Settings Info and 172 Set Server Settings.
@@ -306,7 +310,7 @@ impl ServerSettings {
         let main = MainSettings::decode(sections[Self::MAIN])?;
         let trackers = records(sections[Self::TRACKERS], TrackerEntry::decode)?;
         if usize::from(tracker_count) != trackers.len().min(255) {
-            return Err(DecodeError::Invalid("settings tracker count"));
+            layout.tracker_count_raw = Some(tracker_count);
         }
         let allow_deny = records(sections[Self::ALLOW_DENY], AddressRule::decode)?;
         let greeting = match sections[Self::GREETING] {
@@ -366,7 +370,10 @@ impl ServerSettings {
             out[at + 4..at + 8].copy_from_slice(&section.len.to_be_bytes());
         }
         out[0x64..Self::HEADER_LEN - 1].copy_from_slice(&self.value_64);
-        out[Self::HEADER_LEN - 1] = self.trackers.len().min(255) as u8;
+        out[Self::HEADER_LEN - 1] = self
+            .layout
+            .tracker_count_raw
+            .unwrap_or(self.trackers.len().min(255) as u8);
         let mut prev = None;
         for i in order {
             match &self.layout.gaps[i] {
@@ -585,26 +592,25 @@ fn put_strings(
     Ok(())
 }
 
-/// The padding of a record from `end` to the next multiple of 4; empty when it is the zeros the encoder writes anyway.
-fn record_padding(buf: &[u8], end: usize) -> Result<(Vec<u8>, usize), DecodeError> {
-    let padded = pad4(end);
-    need(buf, padded)?;
+/// The padding of a record from `end` to the next multiple of 4, or to the
+/// end of `buf` when the section ends first; `None` when it is the zeros
+/// the encoder writes anyway.
+fn record_padding(buf: &[u8], end: usize) -> (Option<Vec<u8>>, usize) {
+    let padded = pad4(end).min(buf.len());
     let pad = &buf[end..padded];
-    let kept = if pad.iter().all(|&b| b == 0) {
-        Vec::new()
+    let kept = if padded == pad4(end) && pad.iter().all(|&b| b == 0) {
+        None
     } else {
-        pad.to_vec()
+        Some(pad.to_vec())
     };
-    Ok((kept, padded))
+    (kept, padded)
 }
 
-/// Appends `padding` if it was kept, else zeros, up to the next multiple of 4 from `start`.
-fn pad_record(out: &mut Vec<u8>, start: usize, padding: &[u8]) {
-    if padding.is_empty() {
-        let len = out.len() - start;
-        out.resize(start + pad4(len), 0);
-    } else {
-        out.extend_from_slice(padding);
+/// Appends `padding` if it was kept, else zeros up to the next multiple of 4.
+fn pad_record(out: &mut Vec<u8>, padding: Option<&[u8]>) {
+    match padding {
+        Some(padding) => out.extend_from_slice(padding),
+        None => out.resize(pad4(out.len()), 0),
     }
 }
 
@@ -654,8 +660,9 @@ pub struct MainSettings {
     pub description: Vec<u8>,
     /// Server address, as shown to clients.
     pub address: Vec<u8>,
-    /// Padding after the strings when it is not zeros; empty otherwise.
-    pub padding: Vec<u8>,
+    /// The bytes after the strings as read when they are not zeros to 4,
+    /// which includes a section that ends before them; `None` otherwise.
+    pub padding: Option<Vec<u8>>,
 }
 
 impl MainSettings {
@@ -681,7 +688,7 @@ impl MainSettings {
         need(buf, Self::HEADER_LEN)?;
         let lens = [0x52, 0x53, 0x55].map(|at| usize::from(buf[at]));
         let ([name, description, address], end) = strings(buf, Self::HEADER_LEN, lens)?;
-        let (padding, padded) = record_padding(buf, end)?;
+        let (padding, padded) = record_padding(buf, end);
         if padded != buf.len() {
             return Err(DecodeError::Invalid("main settings length"));
         }
@@ -734,7 +741,7 @@ impl MainSettings {
             &[&self.name, &self.description, &self.address],
             "server settings string",
         )?;
-        pad_record(&mut out, 0, &self.padding);
+        pad_record(&mut out, self.padding.as_deref());
         Ok(out)
     }
 }
@@ -761,7 +768,7 @@ impl Default for MainSettings {
             name: b"New Server".to_vec(),
             description: Vec::new(),
             address: Vec::new(),
-            padding: Vec::new(),
+            padding: None,
         }
     }
 }
@@ -798,8 +805,9 @@ pub struct TrackerEntry {
     pub str_1e: Vec<u8>,
     /// Length at 0x1f; meaning unknown.
     pub str_1f: Vec<u8>,
-    /// Padding to 4 when it is not zeros; empty otherwise.
-    pub padding: Vec<u8>,
+    /// The padding as read when it is not zeros to 4, which includes the
+    /// last record of a section that ends before it; `None` otherwise.
+    pub padding: Option<Vec<u8>>,
 }
 
 impl TrackerEntry {
@@ -817,7 +825,7 @@ impl TrackerEntry {
             [name, comments, address, login, str_18, str_19, groups, str_1b, str_1c, str_1d, str_1e, str_1f],
             end,
         ) = strings(buf, Self::HEADER_LEN, lens)?;
-        let (padding, padded) = record_padding(buf, end)?;
+        let (padding, padded) = record_padding(buf, end);
         Ok((
             Self {
                 ignored_00: buf[0..0x14].try_into().expect("20 bytes"),
@@ -862,7 +870,7 @@ impl TrackerEntry {
             ],
             "tracker entry string",
         )?;
-        pad_record(&mut out, 0, &self.padding);
+        pad_record(&mut out, self.padding.as_deref());
         Ok(out)
     }
 }
@@ -889,8 +897,9 @@ pub struct AddressRule {
     pub comments: Vec<u8>,
     /// Length at 0x1b, which the server reads but leaves at 0; meaning unknown.
     pub str_1b: Vec<u8>,
-    /// Padding to 4 when it is not zeros; empty otherwise.
-    pub padding: Vec<u8>,
+    /// The padding as read when it is not zeros to 4, which includes the
+    /// last record of a section that ends before it; `None` otherwise.
+    pub padding: Option<Vec<u8>>,
 }
 
 impl AddressRule {
@@ -907,7 +916,7 @@ impl AddressRule {
         need(buf, Self::HEADER_LEN)?;
         let lens = [0x18, 0x19, 0x1a, 0x1b].map(|at| usize::from(buf[at]));
         let ([address, name, comments, str_1b], end) = strings(buf, Self::HEADER_LEN, lens)?;
-        let (padding, padded) = record_padding(buf, end)?;
+        let (padding, padded) = record_padding(buf, end);
         Ok((
             Self {
                 expires: u64_at(buf, 0),
@@ -937,7 +946,7 @@ impl AddressRule {
             &[&self.address, &self.name, &self.comments, &self.str_1b],
             "allow/deny string",
         )?;
-        pad_record(&mut out, 0, &self.padding);
+        pad_record(&mut out, self.padding.as_deref());
         Ok(out)
     }
 }

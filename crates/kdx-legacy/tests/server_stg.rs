@@ -104,7 +104,7 @@ fn set_name_recomputes_length_and_pad() {
     assert_eq!(again.main.name.len(), 63);
     // 0x5c + 63 = 0x9b, padded to 0x9c.
     assert_eq!(again.sections()[0].len, 0x9c);
-    assert_eq!(again.main.padding, [] as [u8; 0]);
+    assert_eq!(again.main.padding, None);
     assert_eq!(encode_server_stg(&again).unwrap(), bytes);
 }
 
@@ -272,7 +272,7 @@ fn trailing_bytes_after_the_last_section_survive() {
 }
 
 #[test]
-fn byte_0x54_and_tracker_lengths_load() {
+fn main_byte_0x54_loads_and_round_trips() {
     // main 0x54 sits between the description and address length bytes; the
     // server neither reads nor writes it.
     let mut b = fixture("00-fresh.stg");

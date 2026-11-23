@@ -214,3 +214,102 @@ fn tracker_entry_strings_follow_the_twelve_lengths() {
     assert_eq!(entry.str_1f, b"llllllllllll");
     assert_eq!(entry.encode().unwrap(), record);
 }
+
+fn table_len(blob: &[u8], index: usize) -> usize {
+    let at = 0x0c + 8 * index + 4;
+    u32::from_be_bytes(blob[at..at + 4].try_into().unwrap()) as usize
+}
+
+/// The server reads a section's length from the table, so the last record
+/// of a section may end without its padding.
+#[test]
+fn main_section_ending_unpadded_round_trips() {
+    let mut settings = ServerSettings::default();
+    settings.main.description = b"x".to_vec();
+    let mut blob = settings.encode().unwrap();
+    assert_eq!(table_len(&blob, ServerSettings::MAIN), 0x68);
+    put_table(&mut blob, ServerSettings::MAIN, 0x70, 0x67);
+    let decoded = ServerSettings::decode(&blob).unwrap();
+    assert_eq!(decoded.main.description, b"x");
+    assert_eq!(decoded.main.padding, Some(Vec::new()));
+    assert_eq!(decoded.encode().unwrap(), blob);
+}
+
+/// As [`main_section_ending_unpadded_round_trips`], for the last tracker.
+#[test]
+fn tracker_section_ending_unpadded_round_trips() {
+    let settings = ServerSettings {
+        trackers: vec![tracker(), tracker()],
+        ..ServerSettings::default()
+    };
+    let mut blob = settings.encode().unwrap();
+    let section = settings.sections()[ServerSettings::TRACKERS];
+    assert_eq!(section.len, 2 * 60);
+    put_table(
+        &mut blob,
+        ServerSettings::TRACKERS,
+        section.offset as usize,
+        2 * 60 - 3,
+    );
+    let decoded = ServerSettings::decode(&blob).unwrap();
+    assert_eq!(decoded.trackers.len(), 2);
+    assert_eq!(decoded.trackers[0].padding, None);
+    assert_eq!(decoded.trackers[1].padding, Some(Vec::new()));
+    assert_eq!(decoded.encode().unwrap(), blob);
+}
+
+/// Byte 0x6f is the tracker count; the records are read from the section
+/// whatever it says, and the byte is written back as it was.
+#[test]
+fn tracker_count_byte_may_disagree_with_the_records() {
+    let mut blob = ServerSettings::default().encode().unwrap();
+    blob[0x6f] = 1;
+    let decoded = ServerSettings::decode(&blob).unwrap();
+    assert!(decoded.trackers.is_empty());
+    assert_eq!(decoded.layout.tracker_count_raw, Some(1));
+    assert_eq!(decoded.encode().unwrap(), blob);
+}
+
+/// Bytes between two sections are kept, whatever they are.
+#[test]
+fn nonzero_gap_between_sections_round_trips() {
+    let settings = ServerSettings {
+        trackers: vec![tracker()],
+        ..ServerSettings::default()
+    };
+    let canonical = settings.encode().unwrap();
+    let main = settings.section(ServerSettings::MAIN);
+    let trackers = settings.section(ServerSettings::TRACKERS);
+    let mut blob = canonical[..ServerSettings::HEADER_LEN].to_vec();
+    blob.extend_from_slice(&main);
+    blob.extend_from_slice(&[0xde, 0xad, 0xbe, 0xef, 0x01]);
+    let at = blob.len();
+    put_table(&mut blob, ServerSettings::TRACKERS, at, trackers.len());
+    blob.extend_from_slice(&trackers);
+    blob.resize(blob.len().next_multiple_of(4), 0);
+    let decoded = ServerSettings::decode(&blob).unwrap();
+    assert_eq!(decoded.trackers, settings.trackers);
+    assert_eq!(
+        decoded.layout.gaps[ServerSettings::TRACKERS].as_deref(),
+        Some(&[0xde, 0xad, 0xbe, 0xef, 0x01][..])
+    );
+    assert_eq!(decoded.encode().unwrap(), blob);
+}
+
+/// The bytes that pad the last section are kept when they are not zeros or
+/// fall short.
+#[test]
+fn trailing_pad_round_trips() {
+    let mut blob = ServerSettings::default().encode().unwrap();
+    assert_eq!(table_len(&blob, ServerSettings::MAIN), 0x68);
+    // "New Server" ends the main section at 0x66.
+    put_table(&mut blob, ServerSettings::MAIN, 0x70, 0x66);
+    for pad in [&[0x55, 0x66][..], &[0x55], &[0]] {
+        blob.truncate(0x70 + 0x66);
+        blob.extend_from_slice(pad);
+        let decoded = ServerSettings::decode(&blob).unwrap();
+        assert_eq!(decoded.layout.trailing_pad.as_deref(), Some(pad));
+        assert!(decoded.trailing.is_empty());
+        assert_eq!(decoded.encode().unwrap(), blob);
+    }
+}
