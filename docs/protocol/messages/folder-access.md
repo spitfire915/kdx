@@ -30,11 +30,7 @@ Info](#m1104), and [1105 Set Folder Access](#m1105) use it. <!-- [S
 231; O `captures/linux-accounts-folder-access.pcapng` frame 63; O
 `captures/linux-folder-access-guest.pcapng` frames 30, 40] --> The last two
 captures show the record in [1105 Set Folder Access](#m1105). Its total length,
-padded to a multiple of 4, must equal the payload length; an unpadded record gets [1
-Status](status.md#m1) 0x1000a, corrupt data, as do unpadded [507 Create
-Account](accounts.md#m507), [511 Set Account](accounts.md#m511) and [504 Set
-Account Class](accounts.md#m504) records. <!-- [O
-`captures/openkdx-folder-access.pcapng`] -->
+padded to a multiple of 4, must equal the payload length.
 `kdx_proto::msg::admin::FolderAccess` encodes the three captured records again
 byte for byte, with their padding (test `linux_files`).
 
@@ -100,7 +96,8 @@ Struct `CreateFolderAccess` (dynamic):<a id="sCreateFolderAccess"></a>
 | 0x00 |  | [`FolderAccess`](#sFolderAccess) | `item` |  |
 
 An invalid name gets 0x1001e, and a name that already exists gets 0x1000d. If it
-succeeds, the reply is [1 Status](status.md#m1) 0x44c. Frame 231 makes `test`
+succeeds, the reply is [1 Status](status.md#m1) 0x44c. <!-- [O
+`captures/cli-folder-access.pcapng` frame 21] --> Frame 231 makes `test`
 with all other fields 0, and frame 234 is the success.
 
 ## <a id="m1101"></a>1101 Delete Folder Access

@@ -1,10 +1,9 @@
-# Scenario: openkdx-connection-monitor
+# Scenario: cli-connection-monitor
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
-- Programs: KDX Server 1.620 (Linux), OpenKDX client (openkdx CLI, 05965e2)
+- Programs: KDX Server 1.620 (Linux), the command-line client of the lab
 - Server state: fresh first-run setup; admin `admin`, password `openkdx-lab` (published), guest access on
-- Produced by: `lab/scenarios/connection-monitor.sh` in https://github.com/spitfire915/OpenKDX (the OpenKDX lab)
 - Frames: 376
 
 
@@ -18,6 +17,8 @@
 1. The download completes.
 
 ## Observations
+
+Names in the log and transcript are replaced: `lab` stands for the command-line client's command name and nick.
 
 Server log:
 
@@ -37,7 +38,7 @@ Server log:
 ## Client transcript
 
 ```
-$ openkdx -l 'admin' --nick monitor server monitor --for 6 --every 2
+$ lab -l 'admin' --nick monitor server monitor --for 6 --every 2
 user_id  transfer_id  nick        login  address          login_time           bytes_done  bytes_total  rate    path
 1        0            downloader  admin  127.0.0.1:46104  2026-11-13 14:56:08  0           0            0
 1        2            downloader  admin  127.0.0.1:46110  2026-11-13 14:56:08  524288      4194304      524288  four.bin
@@ -57,16 +58,16 @@ user_id  transfer_id  nick        login  address          login_time           b
 1        0            downloader  admin  127.0.0.1:46104  2026-11-13 14:56:08  0           0            0
 1        2            downloader  admin  127.0.0.1:46110  2026-11-13 14:56:08  2686976     4194304      383853  four.bin
 3        0            monitor     admin  127.0.0.1:44682  2026-11-13 14:56:09  0           0            0
-$ openkdx -l 'admin' --nick downloader files get four.bin --to /home/openkdx/lab/run/four.down
+$ lab -l 'admin' --nick downloader files get four.bin --to /home/lab/lab/run/four.down
 4194304 bytes
 path: four.bin
-to: /home/openkdx/lab/run/four.down
+to: /home/lab/lab/run/four.down
 bytes: 4194304
 ```
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-connection-monitor.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-connection-monitor.pcapng --inventory --password openkdx-lab`.
 
 ```
 4  C->S  127.0.0.1:46104 -> 127.0.0.1:10700  hello

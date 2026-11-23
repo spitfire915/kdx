@@ -1,10 +1,9 @@
-# Scenario: openkdx-server-history
+# Scenario: cli-server-history
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
-- Programs: KDX Server 1.620 (Linux), OpenKDX client (openkdx CLI, 05965e2)
+- Programs: KDX Server 1.620 (Linux), the command-line client of the lab
 - Server state: fresh first-run setup; admin `admin`, password `openkdx-lab` (published), guest access on
-- Produced by: `lab/scenarios/server-history.sh` in https://github.com/spitfire915/OpenKDX (the OpenKDX lab)
 - Frames: 75
 
 
@@ -18,6 +17,8 @@
 1. The historian leaves (182).
 
 ## Observations
+
+Names in the log and transcript are replaced: `lab` stands for the command-line client's command name and nick.
 
 Server log:
 
@@ -37,7 +38,7 @@ Server log:
 ## Client transcript
 
 ```
-$ openkdx -l '' --nick passer-by login
+$ lab -l '' --nick passer-by login
 name: New Server
 description: 
 version: 1.620
@@ -46,8 +47,8 @@ user_id: 2
 users: 2
 transfer_port: 0
 can_modify_settings: 0
-$ openkdx -l '' --nick poster news post 1 --subject hello --body from the lab
-$ openkdx -l 'admin' --nick historian server history --follow 8
+$ lab -l '' --nick poster news post 1 --subject hello --body from the lab
+$ lab -l 'admin' --nick historian server history --follow 8
 time                 event           user_id  nick       login  address          detail  path
 2026-11-13 14:55:21  Server Started  0
 2026-11-13 14:55:22  Login           1        historian  admin  127.0.0.1:37426
@@ -82,7 +83,7 @@ detail:
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-server-history.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-server-history.pcapng --inventory --password openkdx-lab`.
 
 ```
 4  C->S  127.0.0.1:37426 -> 127.0.0.1:10700  hello

@@ -1,10 +1,9 @@
-# Scenario: openkdx-chat-basic
+# Scenario: win-chat-basic
 
 - Date: 2026-11-10
 - Server: KDX Server 1.620 for Linux
 - Programs: KDX Server 1.620 (Linux), KDX Client 1.600 (Windows under Wine 6.0.3)
 - Server state: fresh first-run setup; admin `admin`, password `openkdx-lab` (published), guest access on
-- Produced by: `lab/scenarios/chat-basic.sh` in https://github.com/spitfire915/OpenKDX (the OpenKDX lab)
 - Frames: 29
 
 
@@ -32,7 +31,7 @@ Server log:
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-chat-basic.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/win-chat-basic.pcapng --inventory --password openkdx-lab`.
 
 ```
 4  C->S  127.0.0.1:37182 -> 127.0.0.1:10700  hello

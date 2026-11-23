@@ -1,10 +1,9 @@
-# Scenario: openkdx-upload-resume
+# Scenario: cli-upload-resume
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
-- Programs: KDX Server 1.620 (Linux), OpenKDX client (openkdx CLI, 2a9f3aa)
+- Programs: KDX Server 1.620 (Linux), the command-line client of the lab
 - Server state: fresh first-run setup; admin `admin`, password `openkdx-lab` (published), guest access on
-- Produced by: `lab/scenarios/upload-resume.sh` in https://github.com/spitfire915/OpenKDX (the OpenKDX lab)
 - Frames: 179
 
 
@@ -13,42 +12,44 @@
 1. Start KDX Server 1.620 (Linux) in the sandbox; first-run setup creates admin 'admin', guest access enabled.
 1. Make big.bin: 256 KiB of random bytes on the client side.
 1. Start capturing loopback.
-1. openkdx files put big.bin 'Uploads [UL]' --stop-after 150000: 415, 416 (offset 0), a 417 header for 262144 bytes, then the client drops the connection after 150000 bytes.
-1. openkdx files ls: the server keeps the partial as big.bin.prt.
-1. openkdx files put --resume: 416 offers the offset the server holds (a multiple of 0x1000); the client sends the rest under one 417 header, an empty 417 for the resource fork, and gets 418.
-1. openkdx files ls: big.bin is listed with its full size.
-1. openkdx files get: the download matches the original byte for byte.
+1. The command-line client runs `files put big.bin 'Uploads [UL]' --stop-after 150000`: 415, 416 (offset 0), a 417 header for 262144 bytes, then the client drops the connection after 150000 bytes.
+1. The command-line client runs `files ls`: the server keeps the partial as big.bin.prt.
+1. The command-line client runs `files put --resume`: 416 offers the offset the server holds (the size of the `.prt`); the client sends the rest under one 417 header, an empty 417 for the resource fork, and gets 418.
+1. The command-line client runs `files ls`: big.bin is listed with its full size.
+1. The command-line client runs `files get`: the download matches the original byte for byte.
 
 ## Observations
+
+Names in the log and transcript are replaced: `lab` stands for the command-line client's command name and nick.
 
 Server log:
 
 ```
 26/11/13 02:37:22 PM [] KDX Server started o
 26/11/13 02:37:23 PM [1 unnamed] Incoming connection from 127.0.0.1:36654
-26/11/13 02:37:23 PM [1 unnamed] Set Name: <openkdx> (admin)
+26/11/13 02:37:23 PM [1 unnamed] Set Name: <lab> (admin)
 26/11/13 02:37:23 PM [2 unnamed] Incoming connection from 127.0.0.1:36662
-26/11/13 02:37:23 PM [2 openkdx] Upload "big.bin".
-26/11/13 02:37:24 PM [2 openkdx] Transfer Disconnect
-26/11/13 02:37:24 PM [1 openkdx] Disconnected
+26/11/13 02:37:23 PM [2 lab] Upload "big.bin".
+26/11/13 02:37:24 PM [2 lab] Transfer Disconnect
+26/11/13 02:37:24 PM [1 lab] Disconnected
 26/11/13 02:37:25 PM [3 unnamed] Incoming connection from 127.0.0.1:36672
-26/11/13 02:37:25 PM [3 unnamed] Set Name: <openkdx> (admin)
-26/11/13 02:37:25 PM [3 openkdx] Disconnected
+26/11/13 02:37:25 PM [3 unnamed] Set Name: <lab> (admin)
+26/11/13 02:37:25 PM [3 lab] Disconnected
 26/11/13 02:37:25 PM [4 unnamed] Incoming connection from 127.0.0.1:36678
-26/11/13 02:37:25 PM [4 unnamed] Set Name: <openkdx> (admin)
+26/11/13 02:37:25 PM [4 unnamed] Set Name: <lab> (admin)
 26/11/13 02:37:25 PM [5 unnamed] Incoming connection from 127.0.0.1:36680
-26/11/13 02:37:25 PM [5 openkdx] Upload "big.bin".
-26/11/13 02:37:26 PM [5 openkdx] Transfer Disconnect
-26/11/13 02:37:26 PM [4 openkdx] Disconnected
+26/11/13 02:37:25 PM [5 lab] Upload "big.bin".
+26/11/13 02:37:26 PM [5 lab] Transfer Disconnect
+26/11/13 02:37:26 PM [4 lab] Disconnected
 26/11/13 02:37:26 PM [6 unnamed] Incoming connection from 127.0.0.1:36696
-26/11/13 02:37:26 PM [6 unnamed] Set Name: <openkdx> (admin)
-26/11/13 02:37:26 PM [6 openkdx] Disconnected
+26/11/13 02:37:26 PM [6 unnamed] Set Name: <lab> (admin)
+26/11/13 02:37:26 PM [6 lab] Disconnected
 26/11/13 02:37:26 PM [7 unnamed] Incoming connection from 127.0.0.1:36700
-26/11/13 02:37:26 PM [7 unnamed] Set Name: <openkdx> (admin)
+26/11/13 02:37:26 PM [7 unnamed] Set Name: <lab> (admin)
 26/11/13 02:37:26 PM [8 unnamed] Incoming connection from 127.0.0.1:36712
-26/11/13 02:37:26 PM [8 openkdx] Download "big.bin".
-26/11/13 02:37:27 PM [8 openkdx] Transfer Disconnect
-26/11/13 02:37:27 PM [7 openkdx] Disconnected
+26/11/13 02:37:26 PM [8 lab] Download "big.bin".
+26/11/13 02:37:27 PM [8 lab] Transfer Disconnect
+26/11/13 02:37:27 PM [7 lab] Disconnected
 ```
 
 ## Client transcript
@@ -64,13 +65,13 @@ name     size    modified             type         access
 big.bin  262144  2026-11-13 14:37:26  exttype/bin
 262144 bytes
 path: Uploads [UL]/big.bin
-to: /home/openkdx/lab/run/down.bin
+to: /home/lab/lab/run/down.bin
 bytes: 262144
 ```
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-upload-resume.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-upload-resume.pcapng --inventory --password openkdx-lab`.
 
 ```
 4  C->S  127.0.0.1:36654 -> 127.0.0.1:10700  hello

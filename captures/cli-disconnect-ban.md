@@ -1,10 +1,9 @@
-# Scenario: openkdx-disconnect-ban
+# Scenario: cli-disconnect-ban
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
-- Programs: KDX Server 1.620 (Linux), OpenKDX client (openkdx CLI, 761c223)
-- Server state: fresh first-run setup; admin `admin`, password `openkdx-lab` (published), guest access on
-- Produced by: `lab/scenarios/disconnect-ban.sh` in https://github.com/spitfire915/OpenKDX (the OpenKDX lab)
+- Programs: KDX Server 1.620 (Linux), the command-line client of the lab
+- Server state: fresh first-run setup; admin `admin`, password `openkdx-lab` (published), guest access on; the first login uses `wrong-password`
 - Frames: 90
 
 
@@ -16,9 +15,11 @@
 1. A guest session ('victim') logs in and stays.
 1. Admin: users (the victim is listed), then server disconnect victim --ban 10 --message bye (150).
 1. The victim prints the 151 Disconnect Message (banned, 'bye') and exits with status 3; the admin gets a success Status for the 150.
-1. A guest login right after: the server's own ban list does not apply to 127.0.0.1 (reference sequences.md), so from the lab's loopback it succeeds; the ban itself is only visible as flag 2 in the 151.
+1. A guest login right after: the server's own ban list does not apply to 127.0.0.1 (`docs/protocol/sequences.md`), so from the lab's loopback it succeeds; the ban itself is only visible as flag 2 in the 151.
 
 ## Observations
+
+Names in the log and transcript are replaced: `lab` stands for the command-line client's command name and nick.
 
 Server log:
 
@@ -30,27 +31,27 @@ Server log:
 26/11/13 03:00:21 PM [2 unnamed] Incoming connection from 127.0.0.1:54332
 26/11/13 03:00:21 PM [2 unnamed] Set Name: <victim> (guest)
 26/11/13 03:00:22 PM [3 unnamed] Incoming connection from 127.0.0.1:54336
-26/11/13 03:00:22 PM [3 unnamed] Set Name: <openkdx> (admin)
-26/11/13 03:00:22 PM [3 openkdx] Disconnected
+26/11/13 03:00:22 PM [3 unnamed] Set Name: <lab> (admin)
+26/11/13 03:00:22 PM [3 lab] Disconnected
 26/11/13 03:00:22 PM [4 unnamed] Incoming connection from 127.0.0.1:54344
-26/11/13 03:00:22 PM [4 unnamed] Set Name: <openkdx> (admin)
+26/11/13 03:00:22 PM [4 unnamed] Set Name: <lab> (admin)
 26/11/13 03:00:22 PM [2 victim] Disconnected
-26/11/13 03:00:22 PM [4 openkdx] Disconnected
+26/11/13 03:00:22 PM [4 lab] Disconnected
 26/11/13 03:00:22 PM [5 unnamed] Incoming connection from 127.0.0.1:54350
-26/11/13 03:00:22 PM [5 unnamed] Set Name: <openkdx> (guest)
-26/11/13 03:00:22 PM [5 openkdx] Disconnected
+26/11/13 03:00:22 PM [5 unnamed] Set Name: <lab> (guest)
+26/11/13 03:00:22 PM [5 lab] Disconnected
 ```
 
 ## Client transcript
 
 ```
-$ openkdx -l 'admin' --nick openkdx login
-$ openkdx -l 'admin' --nick openkdx users
+$ lab -l 'admin' --nick lab login
+$ lab -l 'admin' --nick lab users
 user_id  nick     status  info
 2        victim   0
-3        openkdx  0
-$ openkdx -l 'admin' --nick openkdx server disconnect victim --ban 10 --message bye
-$ openkdx -l '' --nick victim login --stay 20
+3        lab  0
+$ lab -l 'admin' --nick lab server disconnect victim --ban 10 --message bye
+$ lab -l '' --nick victim login --stay 20
 name: New Server
 description: 
 version: 1.620
@@ -60,18 +61,18 @@ users: 1
 transfer_port: 0
 can_modify_settings: 0
 user_id: 3
-nick: openkdx
+nick: lab
 user_id: 3
 nick: #3
 user_id: 4
-nick: openkdx
+nick: lab
 banned: true
 shutdown: false
-by: openkdx
+by: lab
 message: bye
 message: bye
 error: 
-$ openkdx -l '' --nick openkdx login
+$ lab -l '' --nick lab login
 name: New Server
 description: 
 version: 1.620
@@ -84,7 +85,7 @@ can_modify_settings: 0
 
 ## Messages
 
-Decoded by `kdx-dissect --inventory --password openkdx-lab -p wrong-password captures/disconnect-ban.pcapng`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-disconnect-ban.pcapng --inventory --password openkdx-lab -p wrong-password`.
 
 ```
 4  C->S  127.0.0.1:54320 -> 127.0.0.1:10700  hello

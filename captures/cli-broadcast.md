@@ -1,10 +1,9 @@
-# Scenario: openkdx-broadcast
+# Scenario: cli-broadcast
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
-- Programs: KDX Server 1.620 (Linux), OpenKDX client (openkdx CLI, 05965e2)
+- Programs: KDX Server 1.620 (Linux), the command-line client of the lab
 - Server state: fresh first-run setup; admin `admin`, password `openkdx-lab` (published), guest access on
-- Produced by: `lab/scenarios/broadcast.sh` in https://github.com/spitfire915/OpenKDX (the OpenKDX lab)
 - Frames: 67
 
 
@@ -17,6 +16,8 @@
 1. Both the guest and the other admin session print the 155 Broadcast; so does nobody else on the sending session, which closes at once.
 
 ## Observations
+
+Names in the log and transcript are replaced: `lab` stands for the command-line client's command name and nick.
 
 Server log:
 
@@ -36,7 +37,7 @@ Server log:
 ## Client transcript
 
 ```
-$ openkdx -l 'admin' --nick announcer login --stay 3
+$ lab -l 'admin' --nick announcer login --stay 3
 name: New Server
 description: 
 version: 1.620
@@ -45,7 +46,7 @@ user_id: 2
 users: 2
 transfer_port: 0
 can_modify_settings: 1
-$ openkdx -l 'admin' --nick speaker server broadcast hello all
+$ lab -l 'admin' --nick speaker server broadcast hello all
 user_id: 3
 nick: speaker
 user_id: 3
@@ -53,7 +54,7 @@ nick: speaker
 text: hello all
 user_id: 3
 nick: #3
-$ openkdx -l '' --nick listener login --stay 8
+$ lab -l '' --nick listener login --stay 8
 name: New Server
 description: 
 version: 1.620
@@ -77,7 +78,7 @@ nick: #2
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-broadcast.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-broadcast.pcapng --inventory --password openkdx-lab`.
 
 ```
 4  C->S  127.0.0.1:44198 -> 127.0.0.1:10700  hello

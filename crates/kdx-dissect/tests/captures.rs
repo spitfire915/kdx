@@ -15,7 +15,7 @@ const PASSWORDS: [&str; 9] = [
     "rs-test-pw",
     "rs-test-pw2",
     "rs-test-pw3",
-    // The OpenKDX lab (captures/openkdx-*): its admin password is published.
+    // The published admin password of the `cli-` and `win-` captures.
     "openkdx-lab",
     "wrong-password",
 ];
@@ -24,6 +24,10 @@ const PASSWORDS: [&str; 9] = [
 ///
 /// Each one is a step in the capture's notes, not a decoding fault.
 const EXPECTED: &[&str] = &[
+    // Step 1: a login with the wrong password; the server's proof carries status 1.
+    "cli-disconnect-ban 54320: key: --password #9 (server proof DOES NOT match)",
+    // Step 2: the client cuts a 256 KiB upload after 150000 bytes.
+    "cli-upload-resume 36662: [26] C->S txid c6c184d7: need 262144 payload bytes",
     // Step 2: admin's password tried for `rs-test`.
     "kdx-accounts 40714: key: --password #1 (server proof DOES NOT match)",
     "kdx-accounts 40718: key: --password #1 (server proof DOES NOT match)",
@@ -48,10 +52,6 @@ const EXPECTED: &[&str] = &[
     "linux-first-connect 35552: stopped: no candidate key matches the client's proof; try --password",
     // Step 6: the changed admin password, which the tracker ignored.
     "linux-tracker 48232: key: --password #4 (server proof DOES NOT match)",
-    // Step 1: a login with the wrong password; the server's proof carries status 1.
-    "openkdx-disconnect-ban 54320: key: --password #9 (server proof DOES NOT match)",
-    // Step 2: the client cuts a 256 KiB upload after 150000 bytes.
-    "openkdx-upload-resume 36662: [26] C->S txid c6c184d7: need 262144 payload bytes",
     // 400 with a bad path, sent on purpose.
     "probe 32980: ! invalid path name count",
     // Step 2: `who --login admin` with a wrong password.

@@ -1,4 +1,4 @@
-//! `--inventory` prints the `## Messages` section that each OpenKDX capture's notes end with.
+//! `--inventory` prints the `## Messages` section that each lab capture's notes end with.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -38,25 +38,35 @@ fn notes_inventory(capture: &str) -> String {
     section[fence..].trim_end().to_owned()
 }
 
+/// The captures whose notes carry an inventory.
+const LAB_CAPTURES: [&str; 15] = [
+    "win-chat-basic",
+    "win-files-basic",
+    "win-first-connect",
+    "win-guest-login",
+    "win-news-basic",
+    "win-pm-basic",
+    "win-tracker-basic",
+    "cli-accounts-classes",
+    "cli-broadcast",
+    "cli-connection-monitor",
+    "cli-disconnect-ban",
+    "cli-folder-access",
+    "cli-server-history",
+    "cli-server-settings",
+    "cli-upload-resume",
+];
+
 #[test]
-fn inventory_matches_the_notes_of_every_openkdx_capture() {
-    let mut checked = 0;
-    for entry in std::fs::read_dir(root().join("captures")).unwrap() {
-        let path = entry.unwrap().path();
-        let Some(stem) = path.file_stem().and_then(|s| s.to_str()) else {
-            continue;
-        };
-        if path.extension().is_some_and(|e| e == "pcapng") && stem.starts_with("openkdx-") {
-            assert_eq!(inventory(stem).trim_end(), notes_inventory(stem), "{stem}");
-            checked += 1;
-        }
+fn inventory_matches_the_notes_of_every_lab_capture() {
+    for stem in LAB_CAPTURES {
+        assert_eq!(inventory(stem).trim_end(), notes_inventory(stem), "{stem}");
     }
-    assert_eq!(checked, 15);
 }
 
 #[test]
 fn inventory_is_one_line_per_message_in_frame_order() {
-    let text = inventory("openkdx-chat-basic");
+    let text = inventory("win-chat-basic");
     let lines: Vec<&str> = text.lines().collect();
     assert_eq!(lines[0], "```");
     assert_eq!(

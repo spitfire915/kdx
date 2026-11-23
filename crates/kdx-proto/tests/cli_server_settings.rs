@@ -1,4 +1,4 @@
-//! Checks against `captures/openkdx-server-settings.pcapng`: the OpenKDX client reads and renames.
+//! Checks against `captures/cli-server-settings.pcapng`: the command-line client reads and renames.
 
 use kdx_proto::msg::server_info::ServerSettings;
 use kdx_proto::session::{Header, MessageType};
@@ -8,9 +8,9 @@ mod common;
 
 fn session() -> Vec<(Header, Vec<u8>)> {
     common::session_with_key(
-        include_bytes!("fixtures/openkdx-server-settings-43622.c2s.bin"),
-        include_bytes!("fixtures/openkdx-server-settings-43622.s2c.bin"),
-        &AccountKey::from_password(b"openkdx-lab"),
+        include_bytes!("fixtures/cli-server-settings-43622.c2s.bin"),
+        include_bytes!("fixtures/cli-server-settings-43622.s2c.bin"),
+        &AccountKey::from_password(common::LAB_PASSWORD),
     )
 }
 
@@ -43,7 +43,7 @@ fn settings_171_decode_typed_and_reencode_byte_exact() {
     assert_eq!(infos[0].len(), ServerSettings::HEADER_LEN + 0x68);
 }
 
-/// Frame 20: the OpenKDX client's 172 echoes the 171 with the new name.
+/// Frame 20: the command-line client's 172 echoes the 171 with the new name.
 #[test]
 fn set_172_reencodes_with_the_new_name() {
     let sets = all(MessageType::SET_SERVER_SETTINGS);

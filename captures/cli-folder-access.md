@@ -1,10 +1,9 @@
-# Scenario: openkdx-folder-access
+# Scenario: cli-folder-access
 
 - Date: 2026-11-13
 - Server: KDX Server 1.620 for Linux
-- Programs: KDX Server 1.620 (Linux), OpenKDX client (openkdx CLI, 05965e2)
+- Programs: KDX Server 1.620 (Linux), the command-line client of the lab
 - Server state: fresh first-run setup; admin `admin`, password `openkdx-lab` (published), guest access on
-- Produced by: `lab/scenarios/folder-access.sh` in https://github.com/spitfire915/OpenKDX (the OpenKDX lab)
 - Frames: 34
 
 
@@ -16,19 +15,21 @@
 
 ## Observations
 
+Names in the log and transcript are replaced: `lab` stands for the command-line client's command name and nick.
+
 Server log:
 
 ```
 26/11/13 02:54:02 PM [] KDX Server started o
 26/11/13 02:54:03 PM [1 unnamed] Incoming connection from 127.0.0.1:52352
-26/11/13 02:54:03 PM [1 unnamed] Set Name: <openkdx> (admin)
-26/11/13 02:54:03 PM [1 openkdx] Disconnected
+26/11/13 02:54:03 PM [1 unnamed] Set Name: <lab> (admin)
+26/11/13 02:54:03 PM [1 lab] Disconnected
 ```
 
 ## Client transcript
 
 ```
-$ openkdx -l 'admin' --nick openkdx run --keep-going
+$ lab -l 'admin' --nick lab run --keep-going
 > folder-access list
 name       icon     flags  description
 [Default]  0x0      0x1    If a folder and its parents do not specify an access item, this item is used by default.
@@ -68,7 +69,7 @@ UL         uploads  0x0    Uploads folder.
 
 ## Messages
 
-Decoded by `kdx-dissect captures/openkdx-folder-access.pcapng --inventory --password openkdx-lab`; checked by `crates/kdx-dissect/tests/inventory.rs`.
+Decoded by `kdx-dissect captures/cli-folder-access.pcapng --inventory --password openkdx-lab`.
 
 ```
 4  C->S  127.0.0.1:52352 -> 127.0.0.1:10700  hello
