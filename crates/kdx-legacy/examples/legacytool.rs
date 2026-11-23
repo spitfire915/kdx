@@ -160,7 +160,7 @@ fn dump(path: &Path) -> kdx_legacy::Result<()> {
             for a in &s.allow_deny {
                 println!(
                     "  {} {:?} {:?} expires {}",
-                    if a.allow { "allow" } else { "deny" },
+                    if a.allow() { "allow" } else { "deny" },
                     lossy(&a.address),
                     lossy(&a.name),
                     a.expires

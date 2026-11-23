@@ -57,7 +57,7 @@ Which window field is which byte, from one change per file: <!-- [O] -->
 | 0x38 | total outgoing speed limit, bytes/s; 0 = off | 04 |
 | 0x52 | name length | 01 |
 | 0x53 | description length | 02 |
-| 0x54 | 0 in every file; sits among the length bytes, so the decoder refuses a non-zero value rather than misread the strings | |
+| 0x54 | 0 in every file; the server neither reads nor writes it, and the decoder keeps any value | |
 | 0x55 | address length | 03 |
 
 The zero after the name is the section's `pad4`, which is absent when the
@@ -67,8 +67,8 @@ strings end on a multiple of 4 (file 03: 0x5c + 34 = 0x7e, two zero bytes; a
 ## Section 1: a tracker entry
 
 0x20-byte header, strings, pad to 4 (files 12, 15). <!-- [O] --> The bytes at
-0x18, 0x19 and 0x1b are zero in every file and refused when set, like 0x54
-of the main section.
+0x18, 0x19 and 0x1b to 0x1f are zero in every file; they are the lengths of
+strings the dialog never filled.
 
 The password typed into Edit Tracker (five characters, visible as dots in the
 lab's screenshot `legacy-samples-tracker-dialog.png`) does not appear in the
@@ -78,16 +78,16 @@ it in `KDXServer.stg` (file 15). <!-- [O] -->
 ## Section 2: an allow/deny entry
 
 0x1c-byte header, strings, pad to 4 (files 10, 11, 16). <!-- [O] --> Byte
-0x1b is zero in every file and refused when set.
+0x1b is zero in every file; it is the length of a fourth string.
 
 An entry whose expiry has passed is dropped the next time the server writes
 the file: the allow entry of file 11 (expiry = the minute it was made) is gone
 from file 12. <!-- [O] -->
 
-Strings are capped at 255 bytes by their length byte;
-`kdx_legacy::server_stg::validate_settings` rejects longer ones before a save,
-and the encoder never writes more bytes than the length byte says. Bytes
-after the last section are kept in `trailing` and written back.
+Strings are capped at 255 bytes by their length byte; the encoder and
+`kdx_legacy::server_stg::validate_settings` reject longer ones, so a save
+never writes them. Bytes after the last section are kept in `trailing` and
+written back.
 
 ## Not yet seen
 

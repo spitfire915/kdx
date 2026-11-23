@@ -30,7 +30,7 @@ fn set_server_name_rewrites_only_section_0_and_keeps_the_rest() {
     let mut s = before.clone();
     set_server_name(&mut s, b"OpenKDX Lab").unwrap();
     assert_eq!(s.main.name, b"OpenKDX Lab");
-    let bytes = s.encode();
+    let bytes = s.encode().unwrap();
     assert_eq!(
         bytes[0x70 + 0x52],
         11,
@@ -51,7 +51,10 @@ fn set_server_name_rewrites_only_section_0_and_keeps_the_rest() {
 async fn server_settings_round_trip_and_set() {
     let (server, mut client) = common::client_with(vec![
         Step::Expect(MessageType::GET_SERVER_SETTINGS),
-        Step::Reply(MessageType::SERVER_SETTINGS_INFO, settings().encode()),
+        Step::Reply(
+            MessageType::SERVER_SETTINGS_INFO,
+            settings().encode().unwrap(),
+        ),
         Step::Expect(MessageType::SET_SERVER_SETTINGS),
         Step::Reply(MessageType::STATUS, Status::Success { value: 172 }.encode()),
     ])

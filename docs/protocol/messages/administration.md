@@ -201,10 +201,29 @@ Struct `ServerSettings` (dynamic):<a id="sServerSettings"></a>
 | 0x04 | 4 | `char[4]` | `sub_protocol` | not stored. `"SSTG"` (0x53535447). <!-- [S `FUN_08060268`] --> |
 | 0x08 | 2 | `u16` | `version` | 1 |
 | 0x0a | 2 | `u8[2]` | `ignored` |  |
-| 0x0c | 88 | [`SettingsSection`](#sSettingsSection)`[11]` | `sections` | not stored. Derived from the sections on encode; an empty section gets the running offset where Rust `placeholders` says so, else 0, 0. |
+| 0x0c | 88 | [`SettingsSection`](#sSettingsSection)`[11]` | `sections` | not stored. Derived from the sections and Rust `layout` on encode; an empty section gets an offset where Rust `placeholders` says so, else 0, 0. |
 | 0x64 | 11 | `u8[11]` | `value_64` | `01 01 01 01 00 01 00 02 00 00 00` in a 171. In a [172 Set Server Settings](#m172), 0x6b is 0, and so is 0x69 if the icon is absent. |
-| 0x6f | 1 | `u8` | `tracker_count` | not stored. Probably the number of records in section 1. <!-- [I] --> It is 0 where section 1 is empty. <!-- [O `captures/cli-server-settings.pcapng` frame 17] --> |
-| 0x70 | rest | `u8[]` | `main` | The sections, each at its table offset; section 0 is a [`MainSettings`](#sMainSettings). Each section starts on a multiple of 4; the sections that follow are Rust `trackers` (1, [`TrackerEntry`](#sTrackerEntry) records back to back), Rust `allow_deny` (2, [`AddressRule`](#sAddressRule) records), Rust `greeting` (3, the layout of [107 Server Greeting](session.md#m107)), Rust `icon` (5, the bytes of [106 Server Icon](session.md#m106)), Rust `chats` (7, [219 Chat Info](chat.md#m219) records back to back; empty in every 171 seen, filled in the settings file), Rust `other` (4, 6, 8 to 10, never seen non-empty), and Rust `trailing` after the last section's padding, never seen non-empty. |
+| 0x6f | 1 | `u8` | `tracker_count` | not stored. The number of records in section 1. <!-- [S `FUN_0805f754`, `FUN_08060268`] --> |
+| 0x70 | rest | `u8[]` | `main` | Section 0, then Rust `trackers`, Rust `allow_deny`, Rust `greeting`, Rust `icon`, Rust `chats`, Rust `other` and Rust `trailing`, as below. |
+
+The server reads each section at its table offset and length, in any order.
+<!-- [S `FUN_08060268`] --> When it builds the blob, it puts the sections in
+table order and pads the main, tracker, allow/deny and greeting sections with
+zeros to a multiple of 4, but not the icon: a blob whose icon length is not a
+multiple of 4 ends unpadded. <!-- [S `FUN_0805f754`] --> Rust `layout` keeps
+the order and the bytes between the sections of a blob laid out otherwise, so
+it encodes back byte for byte. Bytes after the last section and its padding are
+Rust `trailing`; they were never seen non-empty.
+
+| Index | Rust field | Contents |
+|---|---|---|
+| 0 | `main` | A [`MainSettings`](#sMainSettings). |
+| 1 | `trackers` | [`TrackerEntry`](#sTrackerEntry) records back to back. |
+| 2 | `allow_deny` | [`AddressRule`](#sAddressRule) records back to back. |
+| 3 | `greeting` | The layout of [107 Server Greeting](session.md#m107). |
+| 5 | `icon` | The bytes of [106 Server Icon](session.md#m106). |
+| 7 | `chats` | Probably [219 Chat Info](chat.md#m219) records back to back; empty in every 171 captured. <!-- [I] --> |
+| 4, 6, 8 to 10 | `other` | Never seen non-empty. |
 
 Struct `SettingsSection` (8 bytes):<a id="sSettingsSection"></a>
 
@@ -215,9 +234,8 @@ Struct `SettingsSection` (8 bytes):<a id="sSettingsSection"></a>
 
 The main section is entry 0. It starts at 0x70 and is 0x68 bytes in the
 captures. Its offsets below are from its own start; add 0x70 to get the offset
-in the blob. The fields beyond `flags`, the speed limit and the name were pinned
-by changing one setting at a time in the server's dialog and diffing its
-settings file. <!-- [I] -->
+in the blob. The captures show `port`, `flags`, the speed limit and the name;
+the meanings of the other named fields are probable. <!-- [I] -->
 
 Struct `MainSettings` (dynamic):<a id="sMainSettings"></a>
 
@@ -237,15 +255,20 @@ Struct `MainSettings` (dynamic):<a id="sMainSettings"></a>
 | 0x2c | 12 | `u8[12]` | `ignored_2c` | Differs per server directory; probably an identifier. <!-- [I] --> |
 | 0x38 | 4 | `u32` | `total_outgoing_speed_limit` | Bytes per second. 0x5000, or 0 when off. 0xa8 in the blob. |
 | 0x3c | 22 | `u8[22]` | `ignored_3c` |  |
-| 0x52 | 1 | `u8` | `name_len` | 0xc2 in the blob. 0x0a for `New Server` in a 171, and 0x0b in the 172 that sets an 11-byte name; a 171 reads that name back with 0x0b. <!-- [O `captures/cli-server-settings.pcapng` frames 17, 20, 23] --> A 172 that changes the name without this byte probably leaves the server with the old length, so that the name reads back cut short. <!-- [I] --> |
+| 0x52 | 1 | `u8` | `name_len` | 0xc2 in the blob. 0x0b in the 172 that sets the 11-byte name `OpenKDX Lab`; the 171 after it and the next connection's [105 Server Info](session.md#m105) read that name back in full. <!-- [O `captures/cli-server-settings.pcapng` frames 20, 23, 38] --> |
 | 0x53 | 1 | `u8` | `description_len` |  |
-| 0x54 | 1 | `u8` | `ignored_54` | 0. |
+| 0x54 | 1 | `u8` | `ignored_54` | 0. The server neither reads nor writes it. <!-- [S `FUN_08060268`, `FUN_0805f754`] --> |
 | 0x55 | 1 | `u8` | `address_len` |  |
 | 0x56 | 6 | `u8[6]` | `ignored_56` |  |
 | 0x5c | `name_len` | `str` | `name` | 0xcc in the blob. |
 |  | `description_len` | `str` | `description` |  |
 |  | `address_len` | `str` | `address` |  |
 |  | pad4 | `u8[]` | `padding` | Zeros; kept only when they are not. |
+
+No capture has a tracker or allow/deny record. Their layouts are from the
+server's parser and builder.
+<!-- [S `FUN_08061c10`, `FUN_08060268`, `FUN_0805f754`] --> The meanings of
+their strings are probable. <!-- [I] -->
 
 Struct `TrackerEntry` (dynamic):<a id="sTrackerEntry"></a>
 
@@ -256,15 +279,26 @@ Struct `TrackerEntry` (dynamic):<a id="sTrackerEntry"></a>
 | 0x15 | 1 | `u8` | `comments_len` |  |
 | 0x16 | 1 | `u8` | `address_len` |  |
 | 0x17 | 1 | `u8` | `login_len` |  |
-| 0x18 | 2 | `u8[2]` | `ignored_18` | 0. |
+| 0x18 | 1 | `u8` | `str_18_len` |  |
+| 0x19 | 1 | `u8` | `str_19_len` |  |
 | 0x1a | 1 | `u8` | `groups_len` |  |
-| 0x1b | 1 | `u8` | `ignored_1b` | 0. |
-| 0x1c | 4 | `u8[4]` | `ignored_1c` |  |
+| 0x1b | 1 | `u8` | `str_1b_len` |  |
+| 0x1c | 1 | `u8` | `str_1c_len` |  |
+| 0x1d | 1 | `u8` | `str_1d_len` |  |
+| 0x1e | 1 | `u8` | `str_1e_len` |  |
+| 0x1f | 1 | `u8` | `str_1f_len` |  |
 | 0x20 | `name_len` | `str` | `name` |  |
 |  | `comments_len` | `str` | `comments` |  |
 |  | `address_len` | `str` | `address` |  |
 |  | `login_len` | `str` | `login` |  |
+|  | `str_18_len` | `str` | `str_18` |  |
+|  | `str_19_len` | `str` | `str_19` |  |
 |  | `groups_len` | `str` | `groups` | As typed in the dialog. |
+|  | `str_1b_len` | `str` | `str_1b` |  |
+|  | `str_1c_len` | `str` | `str_1c` |  |
+|  | `str_1d_len` | `str` | `str_1d` |  |
+|  | `str_1e_len` | `str` | `str_1e` |  |
+|  | `str_1f_len` | `str` | `str_1f` |  |
 |  | pad4 | `u8[]` | `padding` | Zeros; kept only when they are not. |
 
 Struct `AddressRule` (dynamic):<a id="sAddressRule"></a>
@@ -273,15 +307,16 @@ Struct `AddressRule` (dynamic):<a id="sAddressRule"></a>
 |---|---|---|---|---|
 | 0x00 | 8 | `u64` | `expires` | Milliseconds since 1900; 0 for never. |
 | 0x08 | 8 | `u8[8]` | `ignored_08` |  |
-| 0x10 | 2 | `u16` | `allow` | 1 allow, 0 deny. |
+| 0x10 | 2 | `u16` | `allow_raw` | 1 allow, else deny. The server copies it as it is. |
 | 0x12 | 6 | `u8[6]` | `ignored_12` |  |
 | 0x18 | 1 | `u8` | `address_len` |  |
 | 0x19 | 1 | `u8` | `name_len` |  |
 | 0x1a | 1 | `u8` | `comments_len` |  |
-| 0x1b | 1 | `u8` | `ignored_1b` | 0. |
+| 0x1b | 1 | `u8` | `str_1b_len` | The builder leaves it 0; the parser counts it in the record length. |
 | 0x1c | `address_len` | `str` | `address` |  |
 |  | `name_len` | `str` | `name` |  |
 |  | `comments_len` | `str` | `comments` |  |
+|  | `str_1b_len` | `str` | `str_1b` |  |
 |  | pad4 | `u8[]` | `padding` | Zeros; kept only when they are not. |
 
 These are the section table entries in the captures, as offset and
@@ -296,7 +331,7 @@ length: <!-- [O] -->
   Server Settings Info](#m171). It is 0, 0 in a 172.
 
 Entries 1 and 2 are 0xd8, 0, and entries 4, 6, and 8 to 10 are all zero in every
-capture. Each section starts on a multiple of 4. The greeting section has the
+capture. The greeting section has the
 layout of [107 Server Greeting](session.md#m107), and the icon section holds the
 bytes of [106 Server Icon](session.md#m106). A [172 Set Server Settings](#m172)
 can give the icon section length 0, and the server then keeps its icon: frames

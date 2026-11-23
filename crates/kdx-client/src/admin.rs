@@ -34,7 +34,7 @@ impl Client {
 
     /// 172 Set Server Settings; the server answers with 173 or a success Status.
     pub async fn set_server_settings(&mut self, settings: &ServerSettings) -> Result<()> {
-        self.request(MessageType::SET_SERVER_SETTINGS, &settings.encode())
+        self.request(MessageType::SET_SERVER_SETTINGS, &settings.encode()?)
             .await?;
         Ok(())
     }
