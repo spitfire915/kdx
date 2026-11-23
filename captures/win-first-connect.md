@@ -32,7 +32,7 @@ Server log:
 - client → server, 44 bytes: protocol `%TXP` sub `%KDX` version 1 sub_version 0x10 name_len 5 challenge 0x40d nonce `49f403a414c2980df0150354` name `admin`
 - server → client, 36 bytes: protocol `%TXP` sub `%KDX` version 1 sub_version 0x20 name_len 0 challenge 0x373 nonce `d51503a414c2987f0d832176` name ``
 
-The lab admin password is `openkdx-lab` (see `captures/README.md`), so the session after the handshake can be decrypted with the reference spec's `account_key`.
+The lab admin password is `openkdx-lab`, so the session after the handshake can be decrypted with the reference spec's `account_key`.
 
 ## Messages
 
