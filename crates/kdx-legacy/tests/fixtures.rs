@@ -48,7 +48,7 @@ fn round_trip(path: &Path, bytes: &[u8]) -> Option<Vec<u8>> {
         "dat" if has_component(path, "news") => encode_news(&decode_news(bytes).unwrap()).unwrap(),
         "dat" if has_component(path, "catalog") => encode_catalog(&decode_catalog(bytes).unwrap()),
         "stg" if bytes.starts_with(b"%KDXSSTG") => {
-            encode_server_stg(&decode_server_stg(bytes).unwrap())
+            encode_server_stg(&decode_server_stg(bytes).unwrap()).unwrap()
         }
         "stg" if has_component(path, "tracker") => {
             encode_tracker_stg(&decode_tracker_stg(bytes).unwrap())

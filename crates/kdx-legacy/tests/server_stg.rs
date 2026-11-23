@@ -49,7 +49,7 @@ fn every_server_stg_fixture_round_trips() {
     for path in list {
         let bytes = fs::read(&path).unwrap();
         let s = decode_server_stg(&bytes).unwrap_or_else(|e| panic!("{path:?}: {e}"));
-        assert_eq!(encode_server_stg(&s), bytes, "{path:?}");
+        assert_eq!(encode_server_stg(&s).unwrap(), bytes, "{path:?}");
     }
 }
 
@@ -98,14 +98,14 @@ fn set_name_recomputes_length_and_pad() {
     let mut s = decode_server_stg(&fixture("00-fresh.stg")).unwrap();
     assert_eq!(s.main.name, b"New Server");
     s.main.name = vec![b'n'; 63];
-    let bytes = encode_server_stg(&s);
+    let bytes = encode_server_stg(&s).unwrap();
     assert_eq!(bytes[0x70 + 0x52], 63);
     let again = decode_server_stg(&bytes).unwrap();
     assert_eq!(again.main.name.len(), 63);
     // 0x5c + 63 = 0x9b, padded to 0x9c.
     assert_eq!(again.sections()[0].len, 0x9c);
     assert_eq!(again.main.padding, [] as [u8; 0]);
-    assert_eq!(encode_server_stg(&again), bytes);
+    assert_eq!(encode_server_stg(&again).unwrap(), bytes);
 }
 
 #[test]
@@ -150,11 +150,11 @@ fn stg_fields_pinned_by_the_lab_diffs() {
     assert_eq!(s.allow_deny.len(), 1);
     assert_eq!(s.allow_deny[0].address, b"10.9.8.7");
     assert_eq!(s.allow_deny[0].name, b"Bad host");
-    assert!(!s.allow_deny[0].allow);
+    assert!(!s.allow_deny[0].allow());
     assert_eq!(s.allow_deny[0].expires, 0);
     let s = decode_server_stg(&fixture("11-allow-expiry.stg")).unwrap();
     assert_eq!(s.allow_deny.len(), 2);
-    assert!(s.allow_deny[1].allow);
+    assert!(s.allow_deny[1].allow());
     assert_eq!(s.allow_deny[1].name, b"Good host");
     // 13 Nov 2026, in ms since 1900.
     let unix_ms = kdx_legacy::Time1900(s.allow_deny[1].expires).to_unix_ms();
@@ -201,8 +201,8 @@ fn stg_random_ignored_bytes_round_trip() {
         for r in &mut s.allow_deny {
             r.ignored_08[0] ^= 0x5a;
         }
-        let once = encode_server_stg(&s);
-        let again = encode_server_stg(&decode_server_stg(&once).unwrap());
+        let once = encode_server_stg(&s).unwrap();
+        let again = encode_server_stg(&decode_server_stg(&once).unwrap()).unwrap();
         assert_eq!(once, again, "{path:?}");
         assert_ne!(once, bytes);
     }
@@ -218,7 +218,7 @@ fn edits_relayout_sections_like_the_server() {
     let want = decode_server_stg(&fixture("12-tracker.stg")).unwrap();
     s.allow_deny.truncate(1);
     s.trackers.push(want.trackers[0].clone());
-    assert_eq!(encode_server_stg(&s), fixture("12-tracker.stg"));
+    assert_eq!(encode_server_stg(&s).unwrap(), fixture("12-tracker.stg"));
 }
 
 #[test]
@@ -251,11 +251,8 @@ fn overlong_string_is_rejected_by_validate_and_never_corrupts_layout() {
         validate_settings(&s),
         Err(LegacyError::Decode(DecodeError::Invalid(_)))
     ));
-    // The encoder cuts the string to what the length byte can say, so a
-    // decode still finds the address where it belongs.
-    let again = decode_server_stg(&encode_server_stg(&s)).unwrap();
-    assert_eq!(again.main.description.len(), 255);
-    assert_eq!(again.main.address, b"lab.example");
+    // The encoder refuses a string its length byte cannot say.
+    assert!(matches!(encode_server_stg(&s), Err(LegacyError::Encode(_))));
     let dir = tempfile::tempdir().unwrap();
     let store = LegacyDir::open(dir.path()).unwrap();
     assert!(matches!(
@@ -271,25 +268,18 @@ fn trailing_bytes_after_the_last_section_survive() {
     b.extend_from_slice(&[7, 7, 7, 7, 7]);
     let s = decode_server_stg(&b).unwrap();
     assert_eq!(s.trailing, [7, 7, 7, 7, 7]);
-    assert_eq!(encode_server_stg(&s), b);
+    assert_eq!(encode_server_stg(&s).unwrap(), b);
 }
 
 #[test]
-fn unpinned_length_bytes_refuse_to_load() {
-    // main 0x54 sits between the description and address length bytes.
+fn byte_0x54_and_tracker_lengths_load() {
+    // main 0x54 sits between the description and address length bytes; the
+    // server neither reads nor writes it.
     let mut b = fixture("00-fresh.stg");
     b[0x70 + 0x54] = 3;
-    assert!(matches!(
-        decode_server_stg(&b),
-        Err(LegacyError::Proto(kdx_proto::msg::DecodeError::Invalid(_)))
-    ));
-    // tracker entry 0x18 likewise.
-    let mut b = fixture("12-tracker.stg");
-    b[0xf0 + 0x18] = 1;
-    assert!(matches!(
-        decode_server_stg(&b),
-        Err(LegacyError::Proto(kdx_proto::msg::DecodeError::Invalid(_)))
-    ));
+    let s = decode_server_stg(&b).unwrap();
+    assert_eq!(s.main.ignored_54, 3);
+    assert_eq!(encode_server_stg(&s).unwrap(), b);
 }
 
 #[test]
@@ -298,7 +288,7 @@ fn high_bytes_and_cleared_strings_recompute_lengths() {
     s.main.name = vec![0xa5, 0xff, b'x'];
     s.main.description.clear();
     s.main.address.clear();
-    let bytes = encode_server_stg(&s);
+    let bytes = encode_server_stg(&s).unwrap();
     assert_eq!(bytes[0x70 + 0x52..0x70 + 0x56], [3, 0, 0, 0]);
     assert_eq!(s.sections()[0].len, 0x60);
     let again = decode_server_stg(&bytes).unwrap();

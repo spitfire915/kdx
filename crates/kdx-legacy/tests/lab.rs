@@ -47,7 +47,7 @@ fn lab_every_settings_file_round_trips() {
     for (path, bytes) in files("KDXServer.stg") {
         let s: ServerSettings =
             decode_server_stg(&bytes).unwrap_or_else(|e| panic!("{path:?}: {e}"));
-        assert_eq!(s.encode(), bytes, "{path:?}");
+        assert_eq!(s.encode().unwrap(), bytes, "{path:?}");
     }
 }
 

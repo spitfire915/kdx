@@ -16,41 +16,18 @@ pub fn decode_server_stg(bytes: &[u8]) -> Result<ServerSettings> {
     Ok(ServerSettings::decode(bytes)?)
 }
 
-/// Encodes the settings; strings longer than their length byte are cut to
-/// 255 bytes by `kdx-proto`, so check with [`validate_settings`] first.
-pub fn encode_server_stg(settings: &ServerSettings) -> Vec<u8> {
-    settings.encode()
+/// Encodes the settings; fails on a string longer than its length byte.
+pub fn encode_server_stg(settings: &ServerSettings) -> Result<Vec<u8>> {
+    Ok(settings.encode()?)
 }
 
 /// Refuses settings whose strings do not fit their length bytes.
 pub fn validate_settings(settings: &ServerSettings) -> Result<()> {
-    let long = |v: &Vec<u8>| v.len() > 0xff;
-    let m = &settings.main;
-    if long(&m.name) || long(&m.description) || long(&m.address) {
-        return Err(LegacyError::Decode(DecodeError::Invalid(
+    settings.encode().map(|_| ()).map_err(|_| {
+        LegacyError::Decode(DecodeError::Invalid(
             "server settings string longer than 255 bytes",
-        )));
-    }
-    for t in &settings.trackers {
-        if long(&t.name)
-            || long(&t.comments)
-            || long(&t.address)
-            || long(&t.login)
-            || long(&t.groups)
-        {
-            return Err(LegacyError::Decode(DecodeError::Invalid(
-                "tracker entry string longer than 255 bytes",
-            )));
-        }
-    }
-    for a in &settings.allow_deny {
-        if long(&a.address) || long(&a.name) || long(&a.comments) {
-            return Err(LegacyError::Decode(DecodeError::Invalid(
-                "allow/deny entry string longer than 255 bytes",
-            )));
-        }
-    }
-    Ok(())
+        ))
+    })
 }
 
 /// Magic and version checks shared by the `%KDX`-tagged files, with errors
@@ -93,6 +70,6 @@ impl LegacyDir {
     /// Refuses settings whose strings do not fit their length bytes.
     pub fn save_settings(&self, settings: &ServerSettings) -> Result<()> {
         validate_settings(settings)?;
-        self.save(ServerFile::Settings, &encode_server_stg(settings))
+        self.save(ServerFile::Settings, &encode_server_stg(settings)?)
     }
 }
