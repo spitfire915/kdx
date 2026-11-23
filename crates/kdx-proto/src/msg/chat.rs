@@ -225,6 +225,8 @@ pub struct ChatText {
 impl ChatText {
     /// Size of the fixed part before the text.
     pub const HEADER_LEN: usize = 0x0c;
+    /// Longest text the server accepts.
+    pub const MAX_TEXT_LEN: usize = 0x1000;
     /// The text is an action: the client typed `/me `, and the receiver renders `* nick text`.
     pub const FLAG_ACTION: u16 = 1;
 
@@ -232,8 +234,6 @@ impl ChatText {
     pub const fn is_action(&self) -> bool {
         self.flags & Self::FLAG_ACTION != 0
     }
-    /// Longest text the server accepts.
-    pub const MAX_TEXT_LEN: usize = 0x1000;
 
     /// Decodes the payload.
     pub fn decode(buf: &[u8]) -> Result<Self, DecodeError> {
