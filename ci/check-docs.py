@@ -90,9 +90,9 @@ def check_orphans():
 
 
 def check_paths():
-    # Backticked repo paths must exist.
+    # Backticked repo paths must exist, in capture notes too.
     tops = {d for d in os.listdir(".") if os.path.isdir(d) and not d.startswith(".")}
-    for path in tracked_markdown():
+    for path in markdown_files():
         fence = False
         for n, line in enumerate(open(path, encoding="utf-8"), 1):
             if line.startswith("```"):
@@ -215,7 +215,9 @@ def check_table_columns():
 
 
 TAG = re.compile(r"(?<=<!-- )\[[OSI][^\]]*\]")
-TAG_O = r"O(?: `captures/[\w-]+\.pcapng`)?(?: frames? \d+(?: to \d+)?(?:, \d+(?: to \d+)?)*)?"
+FRAMES = r" frames? \d+(?: to \d+)?(?:, \d+(?: to \d+)?)*"
+# A tag that names a capture cites its frames too.
+TAG_O = rf"O(?: `captures/[\w-]+\.pcapng`{FRAMES}|{FRAMES})?"
 
 TAG_S = r"S(?: (?:(?:client|server|tracker) )?`[^`]+`(?:, (?:(?:client|server|tracker) )?`[^`]+`)*)?"
 
