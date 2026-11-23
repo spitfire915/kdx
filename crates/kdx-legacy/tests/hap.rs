@@ -33,9 +33,9 @@ fn lab_files() -> Vec<(PathBuf, Vec<u8>)> {
 
 fn sample() -> Theme {
     let mut t = Theme::default();
-    t.info.name = b"openkdx-test".to_vec();
+    t.info.name = b"lab-test".to_vec();
     t.info.version = b"1.0".to_vec();
-    t.info.creator = b"OpenKDX".to_vec();
+    t.info.creator = b"lab".to_vec();
     t.info.description = b"Every pixel here is ours.".to_vec();
     t.info.created = Time1900::from_unix_ms(1_794_594_187_000);
     t.info.modified = t.info.created;

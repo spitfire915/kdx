@@ -9,8 +9,8 @@ creates it empty (0 bytes) and writes it on the first change; an empty file
 decodes to an empty store (files 30, 31). <!-- [O] -->
 
 Evidence: "file NN" is a diff between consecutive files in
-`crates/kdx-legacy/tests/fixtures/lab-2026-11-13/server/news/` (OpenKDX's
-`../OpenKDX/lab/scenarios/legacy-samples.sh`, one `openkdx news` command
+`crates/kdx-legacy/tests/fixtures/lab-2026-11-13/server/news/` (the lab's
+legacy samples scenario, one news command of the command-line client
 each, listed in that directory's README).
 
 ## Layout

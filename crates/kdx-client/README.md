@@ -37,10 +37,9 @@ It skips unless `KDX_LAB_SERVER` (`HOST:PORT`) is set; `KDX_LAB_TRACKER`,
 `KDX_LAB_PASSWORD` (default `openkdx-lab`) and `KDX_LAB_TRACKER_HAS_SERVER`
 tune it. The tests share one server and one address, and the server bans an
 address after 30 connections in 300 seconds, so run them with
-`--test-threads=1`; the suite opens at most 25. The
-[OpenKDX lab](https://github.com/spitfire915/OpenKDX/blob/main/lab/README.md)
-runs it through its differential script, which this repository's lab
-workflow calls.
+`--test-threads=1`; the suite opens at most 25. The lab that runs the
+original programs runs it through its differential script, which this
+repository's lab workflow calls.
 
 `Client::next_notice()` decodes the messages a server pushes ([208 Receive
 Chat Text](https://github.com/scottanderson/kdx/blob/main/docs/protocol/messages/chat.md#m208),

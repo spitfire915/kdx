@@ -28,8 +28,8 @@ fn settings() -> ServerSettings {
 fn set_server_name_rewrites_only_section_0_and_keeps_the_rest() {
     let before = settings();
     let mut s = before.clone();
-    set_server_name(&mut s, b"OpenKDX Lab").unwrap();
-    assert_eq!(s.main.name, b"OpenKDX Lab");
+    set_server_name(&mut s, b"Renamed Lab").unwrap();
+    assert_eq!(s.main.name, b"Renamed Lab");
     let bytes = s.encode().unwrap();
     assert_eq!(
         bytes[0x70 + 0x52],

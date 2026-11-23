@@ -11,7 +11,7 @@ use kdx_proto::{AccountKey, ChallengeTable};
 async fn mock_logs_a_client_in() {
     let (server, client) = common::client_with(Vec::new()).await;
     assert_eq!(client.info.name, b"New Server");
-    assert_eq!(client.users[0].nick, b"openkdx");
+    assert_eq!(client.users[0].nick, b"lab");
     assert_eq!(server.payloads(MessageType::SET_IDENTITY).len(), 1);
     drop(client);
     server.finish().await;

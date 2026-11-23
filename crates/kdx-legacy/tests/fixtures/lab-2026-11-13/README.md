@@ -1,7 +1,7 @@
 # Lab set 2026-11-13
 
 Written by KDX Server 1.620 (Linux) in the lab, driven by
-OpenKDX's `../OpenKDX/lab/scenarios/legacy-samples.sh`: one change per snapshot, so consecutive
+the lab's legacy samples scenario: one change per snapshot, so consecutive
 files differ in one field. Snapshot `NN` is the state *after* step `NN`.
 
 ## `server/stg/` — `KDXServer.stg`
@@ -9,7 +9,7 @@ files differ in one field. Snapshot `NN` is the state *after* step `NN`.
 | Snapshot | Change (through) |
 |---|---|
 | 00-fresh | first run: admin `admin`, guest on |
-| 01-name | `openkdx server set-name "Legacy Lab"` (CLI) |
+| 01-name | set the name `Legacy Lab` from the command-line client |
 | 02-description | General Settings → Description `A description` (Windows client) |
 | 03-address | General Settings → Address `lab.example` |
 | 04-speed | General Settings → Total Outgoing Speed Limit on, 20 KB/sec |
@@ -81,7 +81,7 @@ and `files mkdir "" Docs` (52).
 
 ## `client/` — `KDX.stg`
 
-OpenKDX's `../OpenKDX/lab/scenarios/client-samples.sh`, KDX Client 1.600 under Wine, one change
+the lab's client samples scenario, KDX Client 1.600 under Wine, one change
 per clean exit:
 
 | Snapshot | Change |

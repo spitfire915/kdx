@@ -1,7 +1,7 @@
 # `KDXServer.stg`
 
 **Status:** verified (lab). Byte-exact over 18 lab files; Server 1.620 starts
-on our rewrite and shows the name we set (OpenKDX's `../OpenKDX/lab/legacy.sh`).
+on our rewrite and shows the name we set (the lab's legacy check).
 
 The server's settings. The file is the same `%KDXSSTG` blob the wire carries
 in [171 Server Settings Info](../protocol/messages/administration.md#m171)
@@ -17,8 +17,8 @@ accepts. <!-- [O] -->
 
 Evidence: "file NN" is a diff between consecutive snapshots in
 `crates/kdx-legacy/tests/fixtures/lab-2026-11-13/server/stg/`, each after one
-change in the Windows client's Server Settings window (OpenKDX's
-`../OpenKDX/lab/scenarios/legacy-samples.sh` lists the steps). The byte
+change in the Windows client's Server Settings window (the README of that directory lists
+the steps). The byte
 layout is on the protocol page; this page records what the files add to it.
 
 ## The header
